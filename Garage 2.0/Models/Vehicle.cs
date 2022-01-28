@@ -12,7 +12,7 @@ namespace Garage_2._0.Models
         public string Color { get; private set; }
         [StringLength(20, ErrorMessage = "Length of Make can't be more than 20")]
         public string Make { get; private set; }
-        [StringLength(20, ErrorMessage = "Length of Make can't be more than 20")]
+        [StringLength(20, ErrorMessage = "Length of Model can't be more than 20")]
         public string Model { get; private set; }
         [Range(0, int.MaxValue)]
         public int Wheels { get; private set; }
