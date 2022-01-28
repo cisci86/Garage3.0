@@ -1,12 +1,7 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -58,6 +53,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (ModelState.IsValid)
             {
+                vehicle.Arrival = DateTime.UtcNow; // This is what I did instead and it works. However now the edit part is a problem instead...
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -74,6 +70,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
 
             var vehicle = await _context.Vehicle.FindAsync(id);
+            
             if (vehicle == null)
             {
                 return NotFound();
