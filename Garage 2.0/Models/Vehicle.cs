@@ -18,7 +18,7 @@ namespace Garage_2._0.Models
         public string Model { get; set; }
         [Range(0, int.MaxValue)]
         public int Wheels { get; set; }
-        [ReadOnly(true)]
+        [ReadOnly(true)] //Not sure if this is needed
         public DateTime Arrival { get; set; }
         //The error message saids that we need to have an empty constructor so I removed the one we hade.
 

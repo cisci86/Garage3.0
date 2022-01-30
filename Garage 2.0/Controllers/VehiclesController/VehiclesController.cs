@@ -53,7 +53,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (ModelState.IsValid)
             {
-                vehicle.Arrival = DateTime.UtcNow; // This is what I did instead and it works. However now the edit part is a problem instead...
+                vehicle.Arrival = DateTime.UtcNow; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -94,7 +94,16 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 try
                 {
-                    _context.Update(vehicle);
+                    //This was the way I found to not make the arrival date change
+                    _context.Entry(vehicle).Property(r => r.Type).IsModified = true;
+                   // _context.Entry(vehicle).Property(v => v.License).IsModified = true;   we have to discuss this, you can not change a primary key, should we you an Id instead
+                   //to make the license number changeable??
+                    _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
+                    _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
+                    _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
+                    _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
+                    
+                    //_context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
