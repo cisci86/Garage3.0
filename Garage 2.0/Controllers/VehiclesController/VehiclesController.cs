@@ -95,9 +95,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 try
                 {
                     //This was the way I found to not make the arrival date change
-                    _context.Entry(vehicle).Property(r => r.Type).IsModified = true;
-                   // _context.Entry(vehicle).Property(v => v.License).IsModified = true;   we have to discuss this, you can not change a primary key, should we you an Id instead
-                   //to make the license number changeable??
+                    _context.Entry(vehicle).Property(v => v.Type).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Model).IsModified = true;

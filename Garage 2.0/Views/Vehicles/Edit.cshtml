@@ -39,7 +39,7 @@
                 <span asp-validation-for="Wheels" class="text-danger"></span>
             </div>
 @*            Added this to get a way to the arrival time to follow along and not get "reset" when the vehicle is edited*@
-            <input type="hidden" asp-for="Arrival" /> 
+            <input type="hidden" readonly="true" asp-for="Arrival" /> 
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
