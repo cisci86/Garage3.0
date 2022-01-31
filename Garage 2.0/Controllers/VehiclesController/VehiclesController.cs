@@ -53,7 +53,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (ModelState.IsValid)
             {
-                vehicle.Arrival = DateTime.UtcNow; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
+                vehicle.Arrival = DateTime.Now; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -152,6 +152,19 @@ namespace Garage_2._0.Controllers.VehiclesController
         private bool VehicleExists(string id)
         {
             return _context.Vehicle.Any(e => e.License == id);
+        }
+
+        public async Task<IActionResult> Search(string plate)
+        {
+            var model = string.IsNullOrWhiteSpace(plate) ?
+                                _context.Vehicle :
+                                _context.Vehicle.Where(v => v.License == plate);
+            if(model.Count() == 0)
+            {
+                model = _context.Vehicle.Where(v => v.License.Contains(plate));
+            }
+
+            return View(nameof(Index), await model.ToListAsync());
         }
     }
 }
