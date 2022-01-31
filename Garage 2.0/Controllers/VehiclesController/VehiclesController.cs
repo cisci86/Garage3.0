@@ -20,6 +20,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -53,7 +55,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (ModelState.IsValid)
             {
-                vehicle.Arrival = DateTime.UtcNow; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
+                vehicle.Arrival = DateTime.Now; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -152,6 +154,33 @@ namespace Garage_2._0.Controllers.VehiclesController
         private bool VehicleExists(string id)
         {
             return _context.Vehicle.Any(e => e.License == id);
+        }
+
+        //Calculate Total Parked Time + View Model for the Receipt
+        public async Task<IActionResult> ReceiptView(string regNo)
+        {
+            //I am supply "a" as sample License to check
+            Vehicle vehicle = _context.Vehicle.Find("a");
+            Receipt receipt = new Receipt();
+            if (vehicle != null)
+            {
+                receipt.Type = vehicle.Type;
+                receipt.License = vehicle.License;
+                receipt.Arrival = vehicle.Arrival;
+                receipt.CheckOut=DateTime.Now;
+
+                //Calculating Total Parked Time
+
+                TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
+                receipt.ParkingDuration = totalParkedTime;
+                double cost =  (totalParkedTime.Hours*20) + (totalParkedTime.Minutes*0.33);
+                cost = Math.Round(cost, 2);
+                receipt.Price = cost + "Sek";
+            }
+            else
+                return NotFound();
+
+            return View(nameof(ReceiptView), receipt);
         }
     }
 }
