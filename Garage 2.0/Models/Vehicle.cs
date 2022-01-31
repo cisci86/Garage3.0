@@ -9,6 +9,7 @@ namespace Garage_2._0.Models
     {
         public string Type { get; set; }
         [Key]
+        [Remote(action: "VerifyLicense", controller: "Vehicles")]
         public string License { get; set; }
 
         public string Color { get; set; }

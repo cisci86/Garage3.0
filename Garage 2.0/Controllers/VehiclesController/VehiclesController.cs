@@ -20,6 +20,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -51,6 +53,12 @@ namespace Garage_2._0.Controllers.VehiclesController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
+            //Check if license already exists in the database. If it exists, don't add the Vehicle.
+            if(_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            {
+                return BadRequest();
+            }
+
             if (ModelState.IsValid)
             {
                 vehicle.Arrival = DateTime.Now; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
@@ -59,6 +67,16 @@ namespace Garage_2._0.Controllers.VehiclesController
                 return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult VerifyLicense(string license)
+        {
+            if(_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
+            {
+                return Json($"License {license} is already in use.");
+            }
+            return Json(true);
         }
 
         // GET: Vehicles/Edit/5
@@ -87,6 +105,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (id != vehicle.License)
             {
+                //TODO: show a popup to the user and ridicule them for trying to break our system :D
                 return NotFound();
             }
 
@@ -152,6 +171,35 @@ namespace Garage_2._0.Controllers.VehiclesController
         private bool VehicleExists(string id)
         {
             return _context.Vehicle.Any(e => e.License == id);
+        }
+
+        //Calculate Total Parked Time + View Model for the Receipt
+        public async Task<IActionResult> ReceiptView(string regNo)
+        {
+            //regNo should come from check-out so
+            //I am supply "Test123" as sample License to check
+            Vehicle vehicle = _context.Vehicle.Find("Test123");
+            Receipt receipt = new Receipt();
+            if (vehicle != null)
+            {
+                receipt.Type = vehicle.Type;
+                receipt.License = vehicle.License;
+                receipt.Arrival = vehicle.Arrival;
+                receipt.CheckOut=DateTime.Now;
+
+                //Calculating Total Parked Time
+
+                TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
+
+                receipt.ParkingDuration = totalParkedTime;
+                double cost =  (totalParkedTime.Hours*20) + (totalParkedTime.Minutes*0.33);
+                cost = Math.Round(cost, 2);
+                receipt.Price = cost + "Sek";
+            }
+            else
+                return NotFound();
+
+            return View(nameof(ReceiptView), receipt);
         }
 
         public async Task<IActionResult> Search(string plate)
