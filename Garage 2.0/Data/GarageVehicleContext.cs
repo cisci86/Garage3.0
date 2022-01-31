@@ -15,5 +15,6 @@ using Garage_2._0.Models;
 
         public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
 
-        public DbSet<Garage_2._0.Models.Receipt> Receipt { get; set; }
+        //public DbSet<Garage_2._0.Models.Receipt> Receipt { get; set; } //Is this needed?
+
     }
