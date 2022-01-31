@@ -21,6 +21,5 @@ namespace Garage_2._0.Models
         public int Wheels { get; set; }
         [ReadOnly(true)] //Not sure if this is needed
         public DateTime Arrival { get; set; }
-
     }
 }

@@ -61,9 +61,10 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             if (ModelState.IsValid)
             {
-                vehicle.Arrival = DateTime.Now; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
+                vehicle.Arrival = DateTime.Now; 
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
+                TempData["Message"] = $"{vehicle.License} has been successfully parked!";
                 return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
