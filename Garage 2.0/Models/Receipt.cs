@@ -10,7 +10,7 @@ namespace Garage_2._0.Models
         public DateTime Arrival { get; set; }
         public DateTime CheckOut { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:hh} timmar {0:mm} minuter")]
+        [DisplayFormat(DataFormatString = "{0:hh} Hours {0:mm} Minutes")]
         public TimeSpan ParkingDuration { get; set; }
         
         public string Price { get; set; }
