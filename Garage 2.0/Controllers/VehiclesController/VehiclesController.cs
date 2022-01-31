@@ -53,6 +53,12 @@ namespace Garage_2._0.Controllers.VehiclesController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
+            //Check if license already exists in the database. If it exists, don't add the Vehicle.
+            if(_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            {
+                return BadRequest();
+            }
+
             if (ModelState.IsValid)
             {
                 vehicle.Arrival = DateTime.Now; // This is what I did instead and it works. However now the edit part is a problem instead...I think I fix it now
@@ -61,6 +67,16 @@ namespace Garage_2._0.Controllers.VehiclesController
                 return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult VerifyLicense(string license)
+        {
+            if(_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
+            {
+                return Json($"License {license} is already in use.");
+            }
+            return Json(true);
         }
 
         // GET: Vehicles/Edit/5
@@ -89,6 +105,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (id != vehicle.License)
             {
+                //TODO: show a popup to the user and ridicule them for trying to break our system :D
                 return NotFound();
             }
 
