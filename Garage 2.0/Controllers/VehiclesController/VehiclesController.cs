@@ -159,8 +159,9 @@ namespace Garage_2._0.Controllers.VehiclesController
         //Calculate Total Parked Time + View Model for the Receipt
         public async Task<IActionResult> ReceiptView(string regNo)
         {
-            //I am supply "a" as sample License to check
-            Vehicle vehicle = _context.Vehicle.Find("a");
+            //regNo should come from check-out so
+            //I am supply "Test123" as sample License to check
+            Vehicle vehicle = _context.Vehicle.Find("Test123");
             Receipt receipt = new Receipt();
             if (vehicle != null)
             {
@@ -172,6 +173,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 //Calculating Total Parked Time
 
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
+
                 receipt.ParkingDuration = totalParkedTime;
                 double cost =  (totalParkedTime.Hours*20) + (totalParkedTime.Minutes*0.33);
                 cost = Math.Round(cost, 2);
