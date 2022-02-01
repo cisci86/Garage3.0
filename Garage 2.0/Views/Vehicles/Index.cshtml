@@ -76,9 +76,9 @@
                     @Html.DisplayFor(modelItem => item.Arrival)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.License">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.License">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.License" class="btn btn-primary">Check out vehicle</a>
+                <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a> 
+                <a asp-action="Details" asp-route-id="@item.License" class="btn btn-primary">View details</a> 
+                <a asp-action="Delete" asp-route-id="@item.License" class="btn btn-primary">Check out</a>
                 </td>
             </tr>
         }
