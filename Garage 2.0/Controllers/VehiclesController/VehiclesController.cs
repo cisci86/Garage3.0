@@ -215,5 +215,18 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(nameof(Index), await model.ToListAsync());
         }
+
+        public async Task<IActionResult> VehiclesOverview()
+        {
+            var simpleViewList = _context.Vehicle.Select(v => new VehicleViewModel
+            {
+                Type = v.Type,
+                License = v.License,
+                Make = v.Make,
+                TimeSpent = DateTime.Now.Subtract(v.Arrival)
+            });
+            
+            return View(await simpleViewList.ToListAsync());
+        }
     }
 }
