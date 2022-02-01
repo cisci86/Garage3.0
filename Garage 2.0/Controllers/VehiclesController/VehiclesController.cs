@@ -175,11 +175,11 @@ namespace Garage_2._0.Controllers.VehiclesController
         }
 
         //Calculate Total Parked Time + View Model for the Receipt
-        public async Task<IActionResult> ReceiptView(string regNo)
+        public async Task<IActionResult> ReceiptView(string id)
         {
             //regNo should come from check-out so
             //I am supply "Test123" as sample License to check
-            Vehicle vehicle = _context.Vehicle.Find("Test123");
+            Vehicle vehicle = _context.Vehicle.Find(id);
             Receipt receipt = new Receipt();
             if (vehicle != null)
             {
@@ -200,6 +200,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             else
                 return NotFound();
 
+            _context.Vehicle.Remove(vehicle);
+            _context.SaveChanges();
             return View(nameof(ReceiptView), receipt);
         }
 
