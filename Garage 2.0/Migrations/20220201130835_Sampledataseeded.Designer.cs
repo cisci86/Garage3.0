@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    partial class GarageVehicleContextModelSnapshot : ModelSnapshot
+    [Migration("20220201130835_Sampledataseeded")]
+    partial class Sampledataseeded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +55,7 @@ namespace Garage_2._0.Migrations
                     b.HasData(
                         new
                         {
-                            License = "Eg123",
+                            License = "Abc123",
                             Arrival = new DateTime(2022, 2, 1, 12, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Red",
                             Make = "Volvo",
@@ -63,7 +65,7 @@ namespace Garage_2._0.Migrations
                         },
                         new
                         {
-                            License = "AS123",
+                            License = "Bcd123",
                             Arrival = new DateTime(2022, 2, 1, 13, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "White",
                             Make = "Volvo",
@@ -73,7 +75,7 @@ namespace Garage_2._0.Migrations
                         },
                         new
                         {
-                            License = "MX123",
+                            License = "Cde123",
                             Arrival = new DateTime(2022, 2, 1, 14, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Yellow",
                             Make = "Volvo",
@@ -83,7 +85,7 @@ namespace Garage_2._0.Migrations
                         },
                         new
                         {
-                            License = "RR123",
+                            License = "Def123",
                             Arrival = new DateTime(2022, 2, 1, 15, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Blue",
                             Make = "Volvo",
