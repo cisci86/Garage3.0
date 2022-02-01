@@ -1,4 +1,5 @@
-﻿@model Garage_2._0.Models.Vehicle
+﻿@using Garage_2._0.Interfaces
+@model Garage_2._0.Models.Vehicle
 
 @{
     ViewData["Title"] = "Create";
@@ -14,12 +15,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
-                <input asp-for="Type" class="form-control" />
+                <select asp-for="Type" asp-items="@Html.GetEnumSelectList<VehicleTypes>()"></select>  
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="License" class="control-label"></label>
-                <input asp-for="License" class="form-control"/>
+                <input asp-for="License" class="form-control" />
                 <span asp-validation-for="License" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -54,5 +55,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

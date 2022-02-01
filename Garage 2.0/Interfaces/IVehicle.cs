@@ -2,7 +2,7 @@
 {
     public interface IVehicle
     {
-        string Type { get; }
+        VehicleTypes Type { get; }
         //Unique
         string License { get; }
         string Color { get; }
@@ -11,5 +11,12 @@
         //No negative values
         int Wheels { get; }
         DateTime Arrival { get; }
+    }
+
+    public enum VehicleTypes
+    {
+        Car,
+        Bus,
+        Motorcycle
     }
 }

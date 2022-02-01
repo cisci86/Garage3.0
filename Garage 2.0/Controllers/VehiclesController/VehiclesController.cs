@@ -179,7 +179,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             //regNo should come from check-out so
             //I am supply "Test123" as sample License to check
-            Vehicle vehicle = _context.Vehicle.Find(id);
+            Vehicle vehicle = await _context.Vehicle.FindAsync(id);
             Receipt receipt = new Receipt();
             if (vehicle != null)
             {
