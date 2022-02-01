@@ -177,7 +177,6 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> ReceiptView(string id)
         {
             //regNo should come from check-out so
-            //I am supply "Test123" as sample License to check
             Vehicle vehicle = await _context.Vehicle.FindAsync(id);
             Receipt receipt = new Receipt();
             if (vehicle != null)
