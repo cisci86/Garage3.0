@@ -7,11 +7,20 @@
 <h1>VehiclesOverview</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
 </p>
 <span id="message">
     @TempData["Message"]
 </span>
+
+<form asp-action="Search">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+        </div>
+    </div>
+</form>
 
 <table class="table">
     <thead>
@@ -49,7 +58,7 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.License">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.License">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.License">Delete</a>
+                <a class="btn btn-primary" asp-action="Delete" asp-route-id="@item.License">Delete</a>
             </td>
         </tr>
 }

@@ -166,7 +166,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             var vehicle = await _context.Vehicle.FindAsync(id);
             _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(VehiclesOverview));
         }
 
         private bool VehicleExists(string id)
