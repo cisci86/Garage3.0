@@ -65,7 +65,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["Message"] = $"{vehicle.License} has been successfully parked!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
         }
@@ -135,7 +135,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
         }
@@ -215,7 +215,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 model = _context.Vehicle.Where(v => v.License.Contains(plate));
             }
 
-            return View(nameof(Index), await model.ToListAsync());
+            return View(nameof(VehiclesOverview), await model.ToListAsync());
         }
 
         public async Task<IActionResult> VehiclesOverview()
