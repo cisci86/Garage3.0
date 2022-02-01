@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿using Garage_2._0.Interfaces;
+using System.ComponentModel.DataAnnotations;
+#nullable disable
 namespace Garage_2._0.Models
 {
     public class Receipt
     {
-        public string Type { get; set; }
+        public VehicleTypes Type { get; set; }
         [Key]
         public string License { get; set; }
         public DateTime Arrival { get; set; }

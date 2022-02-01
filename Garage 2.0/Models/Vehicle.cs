@@ -1,13 +1,15 @@
 ﻿using Garage_2._0.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+#nullable disable
 
 namespace Garage_2._0.Models
 {
     public class Vehicle : IVehicle
     {
-        public string Type { get; set; }
+        public VehicleTypes Type { get; set; }
         [Key]
         [Remote(action: "VerifyLicense", controller: "Vehicles")]
         public string License { get; set; }
@@ -30,4 +32,6 @@ namespace Garage_2._0.Models
         //    Arrival = DateTime.Now;
         //}
     }
+
+
 }
