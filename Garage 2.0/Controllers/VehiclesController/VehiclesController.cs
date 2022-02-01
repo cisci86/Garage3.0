@@ -64,7 +64,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 vehicle.Arrival = DateTime.Now; 
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = $"{vehicle.License} has been successfully parked!";
+                TempData["message"] = $"{vehicle.License} has been successfully parked!";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
@@ -166,6 +166,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             var vehicle = await _context.Vehicle.FindAsync(id);
             _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
+            TempData["message"] = $"{vehicle.License} has been checked out!";
             return RedirectToAction(nameof(VehiclesOverview));
         }
 
@@ -202,6 +203,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             _context.Vehicle.Remove(vehicle);
             _context.SaveChanges();
+            TempData["message"] = $"{vehicle.License} has been checked out";
             return View(nameof(ReceiptView), receipt);
         }
 
