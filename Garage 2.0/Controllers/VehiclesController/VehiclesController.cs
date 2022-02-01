@@ -20,7 +20,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(await _context.Vehicle.ToListAsync());
         }
 
-        
+
 
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(string id)
@@ -54,14 +54,14 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
-            if(_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
             {
                 return BadRequest();
             }
 
             if (ModelState.IsValid)
             {
-                vehicle.Arrival = DateTime.Now; 
+                vehicle.Arrival = DateTime.Now;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["message"] = $"{vehicle.License} has been successfully parked!";
@@ -73,7 +73,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         [AcceptVerbs("GET", "POST")]
         public IActionResult VerifyLicense(string license)
         {
-            if(_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
+            if (_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
             {
                 return Json($"License {license} is already in use.");
             }
@@ -89,7 +89,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
 
             var vehicle = await _context.Vehicle.FindAsync(id);
-            
+
             if (vehicle == null)
             {
                 return NotFound();
@@ -120,7 +120,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
-                    
+
                     //_context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -186,14 +186,14 @@ namespace Garage_2._0.Controllers.VehiclesController
                 receipt.Type = vehicle.Type;
                 receipt.License = vehicle.License;
                 receipt.Arrival = vehicle.Arrival;
-                receipt.CheckOut=DateTime.Now;
+                receipt.CheckOut = DateTime.Now;
 
                 //Calculating Total Parked Time
 
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double cost =  (totalParkedTime.Hours*20) + (totalParkedTime.Minutes*0.33);
+                double cost = (totalParkedTime.Hours * 20) + (totalParkedTime.Minutes * 0.33);
                 cost = Math.Round(cost, 2);
                 receipt.Price = cost + "Sek";
             }
@@ -215,9 +215,13 @@ namespace Garage_2._0.Controllers.VehiclesController
             var model = string.IsNullOrWhiteSpace(plate) ?
                                 _context.Vehicle :
                                 _context.Vehicle.Where(v => v.License == plate);
-            if(model.Count() == 0)
+            if (model.Count() == 0)
             {
                 model = _context.Vehicle.Where(v => v.License.Contains(plate));
+                if (model.Count() == 0)
+                {
+                    TempData["message"] = "Sorry your search did not yield a result";
+                }
             }
 
             return View(nameof(Index), await model.ToListAsync());
@@ -229,37 +233,41 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 TempData["message"] = "Sorry the garage is empty";
             }
-             var model = string.IsNullOrWhiteSpace(plate) ?
-                                    _context.Vehicle
-                                    .Select(v => new VehicleViewModel
-                                    {
-                                        Type = v.Type,
-                                        License = v.License,
-                                        Make = v.Make,
-                                        TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                    })
-                                    :
-                                    _context.Vehicle.Where(v => v.License == plate)
-                                    .Select(v => new VehicleViewModel
-                                    {
-                                        Type = v.Type,
-                                        License = v.License,
-                                        Make = v.Make,
-                                        TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                    });
+            var model = string.IsNullOrWhiteSpace(plate) ?
+                                   _context.Vehicle
+                                   .Select(v => new VehicleViewModel
+                                   {
+                                       Type = v.Type,
+                                       License = v.License,
+                                       Make = v.Make,
+                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                   })
+                                   :
+                                   _context.Vehicle.Where(v => v.License == plate)
+                                   .Select(v => new VehicleViewModel
+                                   {
+                                       Type = v.Type,
+                                       License = v.License,
+                                       Make = v.Make,
+                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                   });
+            if (model.Count() == 0)
+            {
+                model = _context.Vehicle.Where(v => v.License.Contains(plate))
+                                                              .Select(v => new VehicleViewModel
+                                                              {
+                                                                  Type = v.Type,
+                                                                  License = v.License,
+                                                                  Make = v.Make,
+                                                                  TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                                              });
                 if (model.Count() == 0)
                 {
-                    model = _context.Vehicle.Where(v => v.License.Contains(plate))
-                                                                  .Select(v => new VehicleViewModel
-                                                                  {
-                                                                      Type = v.Type,
-                                                                      License = v.License,
-                                                                      Make = v.Make,
-                                                                      TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                                                  });
+                    TempData["message"] = "Sorry your search did not yield a result";
                 }
+            }
 
-                return View(nameof(VehiclesOverview), await model.ToListAsync());
+            return View(nameof(VehiclesOverview), await model.ToListAsync());
         }
 
         public async Task<IActionResult> VehiclesOverview()
@@ -271,7 +279,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 Make = v.Make,
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
-            
+
             return View(await simpleViewList.ToListAsync());
         }
     }
