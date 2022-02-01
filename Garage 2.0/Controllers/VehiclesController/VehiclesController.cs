@@ -210,7 +210,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (!_context.Vehicle.Any())
             {
-                TempData["message"] = "Sorry the garage is empty";
+                TempData["Error"] = "Sorry the garage is empty";
             }
             var model = string.IsNullOrWhiteSpace(plate) ?
                                 _context.Vehicle :
@@ -220,7 +220,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 model = _context.Vehicle.Where(v => v.License.Contains(plate));
                 if (model.Count() == 0)
                 {
-                    TempData["message"] = "Sorry your search did not yield a result";
+                    TempData["Error"] = "Sorry your search did not yield a result";
                 }
             }
 
@@ -231,7 +231,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (!_context.Vehicle.Any())
             {
-                TempData["message"] = "Sorry the garage is empty";
+                TempData["Error"] = "Sorry the garage is empty";
             }
             var model = string.IsNullOrWhiteSpace(plate) ?
                                    _context.Vehicle
@@ -263,7 +263,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                                                               });
                 if (model.Count() == 0)
                 {
-                    TempData["message"] = "Sorry your search did not yield a result";
+                    TempData["Error"] = "Sorry your search did not yield a result";
                 }
             }
 
