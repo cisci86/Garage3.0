@@ -2,10 +2,10 @@
 @model Garage_2._0.Models.Vehicle
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Change Vehicle";
 }
 
-<h1>Edit</h1>
+<h1>Change Vehicle</h1>
 
 <h4>Vehicle</h4>
 <hr />
@@ -40,14 +40,14 @@
                 <span asp-validation-for="Wheels" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Make changes" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-primary">Back to Garage</a>
 </div>
 
 @section Scripts {

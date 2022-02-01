@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<Garage_2._0.Models.VehicleViewModel>
 
 @{
-    ViewData["Title"] = "VehiclesOverview";
+    ViewData["Title"] = "Overview";
 }
 
-<h1>VehiclesOverview</h1>
+<h1>Overview</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
 </p>
 <span id="message">
     @TempData["Message"]
@@ -47,9 +47,9 @@
                 @Html.DisplayFor(modelItem => item.TimeSpent)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.License">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.License">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.License">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a> 
+                <a asp-action="Details" asp-route-id="@item.License" class="btn btn-primary">View details</a> 
+                <a asp-action="Delete" asp-route-id="@item.License" class="btn btn-primary">Check out</a>
             </td>
         </tr>
 }
