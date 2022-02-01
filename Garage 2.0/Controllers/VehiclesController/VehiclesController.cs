@@ -207,7 +207,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(nameof(ReceiptView), receipt);
         }
 
-        public async Task<IActionResult> Search(string plate)
+        public async Task<IActionResult> SearchDetailed(string plate)
         {
             var model = string.IsNullOrWhiteSpace(plate) ?
                                 _context.Vehicle :
