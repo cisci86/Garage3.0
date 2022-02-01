@@ -9,6 +9,10 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
 </p>
+<span id="message">
+    @TempData["Message"]
+</span>
+
 
 <form asp-action="Search">
     <div class="input-group mb-3">
