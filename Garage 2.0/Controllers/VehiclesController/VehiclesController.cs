@@ -251,22 +251,27 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(nameof(VehiclesOverview), await model.ToListAsync());
     }
 
-    public async Task<IActionResult> VehiclesOverview()
-    {
-        var simpleViewList = _context.Vehicle.Select(v => new VehicleViewModel
+        public async Task<IActionResult> VehiclesOverview()
         {
-            Type = v.Type,
-            License = v.License,
-            Make = v.Make,
-            TimeSpent = DateTime.Now.Subtract(v.Arrival)
-        });
-
+            var simpleViewList = _context.Vehicle.Select(v => new VehicleViewModel
+            {
+                Type = v.Type,
+                License = v.License,
+                Make = v.Make,
+                TimeSpent = DateTime.Now.Subtract(v.Arrival)
+            });
+            string GarageStatus=TotalGarageCapacity_and_FreeSpace();
+            ViewBag.garageStatus = GarageStatus;
             return View(await simpleViewList.ToListAsync());
         }
-
-        public void TotalGarageCapacity()
+        
+        //Calculating Available free space
+        public string TotalGarageCapacity_and_FreeSpace()
         {
+            int recordCount=_context.Vehicle.Count();
             int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            string GarageStatus= $"Total Capacity of the Garage is : {Total_Garage_Capacity}; Available Free Space is :{Total_Garage_Capacity - recordCount}";
+            return GarageStatus;
         }
     }
 }
