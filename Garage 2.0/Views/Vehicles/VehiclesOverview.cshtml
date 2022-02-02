@@ -32,19 +32,6 @@
     </div>
 </form>
 
-<ul class="list-group">
-    @foreach (int i in Enum.GetValues(typeof(VehicleTypes)))
-    {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            @Html.DisplayName($"{Enum.GetName(typeof(VehicleTypes), i)}")
-            <span class="badge bg-primary rounded-pill">
-            @Html.DisplayName(Model.Where(t => (int)t.Type == i).ToList().Count.ToString())
-            </span>
-        </li>
-    }
-
-</ul>
-
 <table class="table">
     <thead>
         <tr>

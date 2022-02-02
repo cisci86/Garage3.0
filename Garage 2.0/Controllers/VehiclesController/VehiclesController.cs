@@ -1,4 +1,5 @@
 ﻿#nullable disable
+using Garage_2._0.Interfaces;
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,8 @@ namespace Garage_2._0.Controllers.VehiclesController
     public class VehiclesController : Controller
     {
         private readonly GarageVehicleContext _context;
+
+        private readonly double hourlyRate = 20;
 
         public VehiclesController(GarageVehicleContext context)
         {
@@ -19,8 +22,6 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             return View(await _context.Vehicle.ToListAsync());
         }
-
-
 
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(string id)
@@ -281,6 +282,30 @@ namespace Garage_2._0.Controllers.VehiclesController
             });
 
             return View(await simpleViewList.ToListAsync());
+        }
+
+        public async Task<IActionResult> Statistics()
+        {
+            //Create a list of an anonymous class
+            var res = await _context.Vehicle.Select(v => new {Arrival = v.Arrival, Wheels = v.Wheels, Type = v.Type}).ToListAsync();
+
+            Statistics statistics = new Statistics
+            {
+                TotalWheelAmount = res.Sum(r => r.Wheels),
+                TotalCostsGenerated = res.Sum(v =>
+                {
+                    TimeSpan duration = DateTime.Now.Subtract(v.Arrival);
+                    double cost = (duration.Hours + (duration.Minutes * 1.0 / 60)) * hourlyRate;
+                    return Math.Round(cost, 2);
+                })
+            };
+
+            foreach (VehicleTypes type in Enum.GetValues(typeof(VehicleTypes)))
+            {
+                statistics.VehicleTypeCounter.Add(type, res.Where(v => v.Type == type).Count());
+            }
+
+            return View(statistics);
         }
     }
 }
