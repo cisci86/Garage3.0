@@ -216,21 +216,17 @@ namespace Garage_2._0.Controllers.VehiclesController
         //This one is used on the detailed view
         public async Task<IActionResult> SearchDetailed(string plate)
         {
-            if (!_context.Vehicle.Any())
+            if (plate == null)
             {
-                TempData["Error"] = "Sorry the garage is empty";
+                TempData["Error"] = "You need to enter a License plate before you search";
+                var m = new List<VehicleViewModel>();
+                return View(nameof(VehiclesOverview), m);
             }
-            var model = string.IsNullOrWhiteSpace(plate) ?
-                                _context.Vehicle :
-                                _context.Vehicle.Where(v => v.License == plate);
-            if (model.Count() == 0)
-            {
-                model = _context.Vehicle.Where(v => v.License.Contains(plate));
-                if (model.Count() == 0)
-                {
-                    TempData["Error"] = "Sorry your search did not yield a result";
-                }
-            }
+             var model = _context.Vehicle.Where(v => v.License.Contains(plate));
+                //if (model.Count() == 0)
+                //{
+                //    TempData["Error"] = "Sorry your search did not yield a result";
+                //}
 
             return View(nameof(Index), await model.ToListAsync());
         }
@@ -253,16 +249,6 @@ namespace Garage_2._0.Controllers.VehiclesController
                                                              });
 
             return View(nameof(VehiclesOverview), await model.ToListAsync());
-    }
-    private VehicleViewModel VehicleViewModelCast(Vehicle v)
-    {
-        return new VehicleViewModel
-        {
-            Type = v.Type,
-            License = v.License,
-            Make = v.Make,
-            TimeSpent = DateTime.Now.Subtract(v.Arrival)
-        };
     }
 
     public async Task<IActionResult> VehiclesOverview()
