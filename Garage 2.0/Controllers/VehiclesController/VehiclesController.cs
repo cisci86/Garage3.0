@@ -2,6 +2,7 @@
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -9,11 +10,15 @@ namespace Garage_2._0.Controllers.VehiclesController
     {
         private readonly GarageVehicleContext _context;
 
-        public VehiclesController(GarageVehicleContext context)
+        IConfiguration _iConfig;
+        public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
         {
             _context = context;
+            _iConfig = iConfig;
         }
-
+        
+        
+        
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
@@ -46,6 +51,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View();
         }
 
+
         // POST: Vehicles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -53,6 +59,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
+
+            
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
             if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
             {
@@ -281,6 +289,11 @@ namespace Garage_2._0.Controllers.VehiclesController
             });
 
             return View(await simpleViewList.ToListAsync());
+        }
+
+        public void TotalGarageCapacity()
+        {
+            int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
         }
     }
 }
