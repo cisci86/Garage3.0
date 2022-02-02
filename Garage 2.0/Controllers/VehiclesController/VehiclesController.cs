@@ -13,7 +13,6 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         private readonly double hourlyRate = 20;
 
-        public VehiclesController(GarageVehicleContext context)
         IConfiguration _iConfig;
         public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
         {
