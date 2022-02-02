@@ -17,6 +17,7 @@
     {
         Car,
         Bus,
-        Motorcycle
+        Motorcycle,
+        Unicycle
     }
 }
