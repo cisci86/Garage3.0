@@ -120,7 +120,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
-
+                    TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     //_context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
