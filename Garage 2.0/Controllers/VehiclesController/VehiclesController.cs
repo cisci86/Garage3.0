@@ -11,7 +11,7 @@ namespace Garage_2._0.Controllers.VehiclesController
     {
         private readonly GarageVehicleContext _context;
 
-        private readonly double hourlyRate = 20;
+
 
         IConfiguration _iConfig;
         public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
@@ -202,7 +202,8 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double cost = (totalParkedTime.Hours * 20) + (totalParkedTime.Minutes * 0.33);
+                double hourlyRate= _iConfig.GetValue<double>("Price:HourlyRate");
+                double cost=(totalParkedTime.Hours *hourlyRate) + (totalParkedTime.Minutes*hourlyRate/60.0);
                 cost = Math.Round(cost, 2);
                 receipt.Price = cost + "Sek";
             }
@@ -292,6 +293,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TotalWheelAmount = res.Sum(r => r.Wheels),
                 TotalCostsGenerated = res.Sum(v =>
                 {
+                    double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
                     TimeSpan duration = DateTime.Now.Subtract(v.Arrival);
                     double cost = (duration.Hours + (duration.Minutes * 1.0 / 60)) * hourlyRate;
                     return Math.Round(cost, 2);
