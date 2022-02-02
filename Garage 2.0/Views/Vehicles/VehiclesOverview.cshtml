@@ -8,8 +8,12 @@
 <h1>Overview</h1>
 
 <p>
+    
     <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
-      <label style="background:pink" class="form-control" >@ViewBag.garageStatus</label>
+    @if(ViewBag.garageStatus != null)
+    {
+    <label style="background:pink" class="form-control" >@ViewBag.garageStatus</label>
+    }
     </p>
   
     
