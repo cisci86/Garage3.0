@@ -3,6 +3,7 @@ using Garage_2._0.Interfaces;
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -13,10 +14,15 @@ namespace Garage_2._0.Controllers.VehiclesController
         private readonly double hourlyRate = 20;
 
         public VehiclesController(GarageVehicleContext context)
+        IConfiguration _iConfig;
+        public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
         {
             _context = context;
+            _iConfig = iConfig;
         }
-
+        
+        
+        
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
@@ -47,6 +53,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View();
         }
 
+
         // POST: Vehicles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -54,6 +61,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
+
+            
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
             if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
             {
@@ -121,7 +130,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
-
+                    TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     //_context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -209,67 +218,47 @@ namespace Garage_2._0.Controllers.VehiclesController
         //This one is used on the detailed view
         public async Task<IActionResult> SearchDetailed(string plate)
         {
-            if (!_context.Vehicle.Any())
+            if (plate == null)
             {
-                TempData["Error"] = "Sorry the garage is empty";
+                TempData["Error"] = "You need to enter a License plate before you search";
+                var m = new List<VehicleViewModel>();
+                return View(nameof(VehiclesOverview), m);
             }
-            var model = string.IsNullOrWhiteSpace(plate) ?
-                                _context.Vehicle :
-                                _context.Vehicle.Where(v => v.License == plate);
-            if (model.Count() == 0)
-            {
-                model = _context.Vehicle.Where(v => v.License.Contains(plate));
-                if (model.Count() == 0)
-                {
-                    TempData["Error"] = "Sorry your search did not yield a result";
-                }
-            }
+             var model = _context.Vehicle.Where(v => v.License.Contains(plate));
+                //if (model.Count() == 0)
+                //{
+                //    TempData["Error"] = "Sorry your search did not yield a result";
+                //}
 
             return View(nameof(Index), await model.ToListAsync());
         }
         //this one is used on the Overview
         public async Task<IActionResult> Search(string plate)
         {
-            if (!_context.Vehicle.Any())
+            if(plate == null)
             {
-                TempData["Error"] = "Sorry the garage is empty";
+                TempData["Error"] = "You need to enter a License plate before you search";
+                var m = new List<VehicleViewModel>();
+                ViewBag.Button = "true";
+                return View(nameof(VehiclesOverview), m);
             }
-            var model = string.IsNullOrWhiteSpace(plate) ?
-                                   _context.Vehicle
-                                   .Select(v => new VehicleViewModel
-                                   {
-                                       Type = v.Type,
-                                       License = v.License,
-                                       Make = v.Make,
-                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                   })
-                                   :
-                                   _context.Vehicle.Where(v => v.License == plate)
-                                   .Select(v => new VehicleViewModel
-                                   {
-                                       Type = v.Type,
-                                       License = v.License,
-                                       Make = v.Make,
-                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                   });
-            if (model.Count() == 0)
-            {
-                model = _context.Vehicle.Where(v => v.License.Contains(plate))
-                                                              .Select(v => new VehicleViewModel
-                                                              {
-                                                                  Type = v.Type,
-                                                                  License = v.License,
-                                                                  Make = v.Make,
-                                                                  TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                                              });
-                if (model.Count() == 0)
-                {
-                    TempData["Error"] = "Sorry your search did not yield a result";
-                }
-            }
+            var model = _context.Vehicle.Where(v => v.License.Contains(plate))
+                                                             .Select(v => new VehicleViewModel
+                                                             {
+                                                                 Type = v.Type,
+                                                                 License = v.License,
+                                                                 Make = v.Make,
+                                                                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                                             });
+            await model.ToListAsync();
 
-            return View(nameof(VehiclesOverview), await model.ToListAsync());
-        }
+            if (!model.Any())
+            {
+                TempData["Error"] = "Your search did not yield any results";
+            }
+            ViewBag.Button = "true";
+            return View(nameof(VehiclesOverview), model);
+    }
 
         public async Task<IActionResult> VehiclesOverview()
         {
@@ -280,8 +269,18 @@ namespace Garage_2._0.Controllers.VehiclesController
                 Make = v.Make,
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
-
+            string GarageStatus=TotalGarageCapacity_and_FreeSpace();
+            ViewBag.garageStatus = GarageStatus;
             return View(await simpleViewList.ToListAsync());
+        }
+        
+        //Calculating Available free space
+        public string TotalGarageCapacity_and_FreeSpace()
+        {
+            int recordCount=_context.Vehicle.Count();
+            int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            string GarageStatus= $"Total Capacity of the Garage is: {Total_Garage_Capacity}. Available Free Space is:{Total_Garage_Capacity - recordCount}";
+            return GarageStatus;
         }
 
         public async Task<IActionResult> Statistics()

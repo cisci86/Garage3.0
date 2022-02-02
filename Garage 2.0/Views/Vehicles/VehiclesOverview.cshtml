@@ -8,8 +8,15 @@
 <h1>Overview</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
-</p>
+    
+    <a asp-action="Create" class="btn btn-primary mb-1">Park a vehicle</a>
+    @if(ViewBag.garageStatus != null)
+    {
+    <label style="background:pink" class="form-control" >@ViewBag.garageStatus</label>
+    }
+    </p>
+  
+    
 @if (TempData["message"] != null)
 {
     <div class="alert alert-success" id="message">
@@ -18,8 +25,9 @@
 }
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger" id="message">
-        <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
+         <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button> 
     </div>
 }
 
@@ -75,3 +83,7 @@
         }
     </tbody>
 </table>
+@if(ViewBag.Button != null)
+{
+<a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>    
+}
