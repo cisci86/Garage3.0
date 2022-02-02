@@ -229,58 +229,45 @@ namespace Garage_2._0.Controllers.VehiclesController
         //this one is used on the Overview
         public async Task<IActionResult> Search(string plate)
         {
-            if (!_context.Vehicle.Any())
+            if(plate == null)
             {
-                TempData["Error"] = "Sorry the garage is empty";
+                TempData["Error"] = "You need to enter a License plate before you search";
+                var m = new List<VehicleViewModel>();
+                return View(nameof(VehiclesOverview), m);
             }
-            var model = string.IsNullOrWhiteSpace(plate) ?
-                                   _context.Vehicle
-                                   .Select(v => new VehicleViewModel
-                                   {
-                                       Type = v.Type,
-                                       License = v.License,
-                                       Make = v.Make,
-                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                   })
-                                   :
-                                   _context.Vehicle.Where(v => v.License == plate)
-                                   .Select(v => new VehicleViewModel
-                                   {
-                                       Type = v.Type,
-                                       License = v.License,
-                                       Make = v.Make,
-                                       TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                   });
-            if (model.Count() == 0)
-            {
-                model = _context.Vehicle.Where(v => v.License.Contains(plate))
-                                                              .Select(v => new VehicleViewModel
-                                                              {
-                                                                  Type = v.Type,
-                                                                  License = v.License,
-                                                                  Make = v.Make,
-                                                                  TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                                              });
-                if (model.Count() == 0)
-                {
-                    TempData["Error"] = "Sorry your search did not yield a result";
-                }
-            }
+            var model = _context.Vehicle.Where(v => v.License.Contains(plate))
+                                                             .Select(v => new VehicleViewModel
+                                                             {
+                                                                 Type = v.Type,
+                                                                 License = v.License,
+                                                                 Make = v.Make,
+                                                                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                                             });
 
             return View(nameof(VehiclesOverview), await model.ToListAsync());
-        }
-
-        public async Task<IActionResult> VehiclesOverview()
-        {
-            var simpleViewList = _context.Vehicle.Select(v => new VehicleViewModel
-            {
-                Type = v.Type,
-                License = v.License,
-                Make = v.Make,
-                TimeSpent = DateTime.Now.Subtract(v.Arrival)
-            });
-
-            return View(await simpleViewList.ToListAsync());
-        }
     }
+    private VehicleViewModel VehicleViewModelCast(Vehicle v)
+    {
+        return new VehicleViewModel
+        {
+            Type = v.Type,
+            License = v.License,
+            Make = v.Make,
+            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+        };
+    }
+
+    public async Task<IActionResult> VehiclesOverview()
+    {
+        var simpleViewList = _context.Vehicle.Select(v => new VehicleViewModel
+        {
+            Type = v.Type,
+            License = v.License,
+            Make = v.Make,
+            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+        });
+
+        return View(await simpleViewList.ToListAsync());
+    }
+}
 }
