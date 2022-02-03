@@ -21,7 +21,7 @@ namespace Garage_2._0.Models
         public string Model { get; set; }
         [Range(0, int.MaxValue)]
         public int Wheels { get; set; }
-        [ReadOnly(true)] //Not sure if this is needed
+        [ReadOnly(true)]
         public DateTime Arrival { get; set; }
         public int ParkingSpot { get; set; }
     }

@@ -6,6 +6,7 @@
 
 <h1>Detailed View</h1>
 
+@*If there is something in the different viewbags and/or Tempdata different banners will show*@
 <p>
     <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
     @if (ViewBag.garageStatus != null)
@@ -132,4 +133,9 @@
             }
         }
     </div>
+}
+@*If there are something in the viewBag.Button a button will show to go back after a search*@
+@if(ViewBag.Button != null)
+{
+<a asp-action="Index" class="btn btn-primary">Go Back</a>    
 }
