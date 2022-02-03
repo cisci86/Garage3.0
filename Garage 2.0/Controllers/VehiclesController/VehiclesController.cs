@@ -25,6 +25,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
+            string GarageStatus = TotalGarageCapacity_and_FreeSpace();
+            ViewBag.garageStatus = GarageStatus;
             return View(await _context.Vehicle.ToListAsync());
         }
 
