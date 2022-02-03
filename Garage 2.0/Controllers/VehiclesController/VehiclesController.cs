@@ -283,6 +283,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             });
             string GarageStatus=TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
+            ViewData["spotsTaken"] = parkingSpots;
             return View(await simpleViewList.ToListAsync());
         }
         
