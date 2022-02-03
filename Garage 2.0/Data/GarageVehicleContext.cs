@@ -15,7 +15,7 @@ using Garage_2._0.Models;
 
         public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
 
-
+    //adds seed data to the database
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
