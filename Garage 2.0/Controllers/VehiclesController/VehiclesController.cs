@@ -308,10 +308,6 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
-        public async Task<IActionResult> ParkingSpots()
-        {
 
-            return View();
-        }
     }
 }

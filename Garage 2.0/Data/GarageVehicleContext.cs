@@ -14,7 +14,6 @@ using Garage_2._0.Models;
         }
 
         public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
-        public DbSet<Garage_2._0.Models.ParkingSpots> ParkingSpots { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +28,5 @@ using Garage_2._0.Models;
                new Vehicle { Type = Garage_2._0.Interfaces.VehicleTypes.Bus, License = "RR123", Color = "Blue", Make = "Volvo", Model = "Xc60", Wheels = 8, Arrival = DateTime.Parse("2022 - 02 - 01 15:09:28") }
             );
     }
-
 
 }
