@@ -19,7 +19,6 @@ namespace Garage_2._0.Controllers.VehiclesController
             _context = context;
             _iConfig = iConfig;
             SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
         }
         
         
@@ -27,6 +26,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
             return View(await _context.Vehicle.ToListAsync());
@@ -39,7 +39,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             var vehicle = await _context.Vehicle
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
@@ -53,6 +53,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles/Create
         public IActionResult Create()
         {
+
             if (CheckIfGarageIsFull())
             {
                 TempData["Error"] = "Sorry the garage is already full!";
@@ -231,8 +232,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             if (plate == null)
             {
                 TempData["Error"] = "You need to enter a License plate before you search";
-                var m = new List<VehicleViewModel>();
-                return View(nameof(VehiclesOverview), m);
+                return RedirectToAction(nameof(Index));
             }
              var model = _context.Vehicle.Where(v => v.License.Contains(plate));
 
@@ -252,10 +252,10 @@ namespace Garage_2._0.Controllers.VehiclesController
             if(plate == null)
             {
                 TempData["Error"] = "You need to enter a License plate before you search";
-                var m = new List<VehicleViewModel>();
                 ViewBag.Button = "true";
-                return View(nameof(VehiclesOverview), m);
+                return RedirectToAction(nameof(VehiclesOverview));
             }
+
             var model = _context.Vehicle.Where(v => v.License.Contains(plate))
                                                              .Select(v => new VehicleViewModel
                                                              {
@@ -284,6 +284,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
             string GarageStatus=TotalGarageCapacity_and_FreeSpace();
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             ViewBag.garageStatus = GarageStatus;
             ViewData["spotsTaken"] = parkingSpots;
             return View(await simpleViewList.ToListAsync());
@@ -330,6 +331,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         }
         private bool CheckIfGarageIsFull()
         {
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             bool isFull = true;
             for (int i = 0; i < parkingSpots.Length; i++)
             {
@@ -341,6 +343,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.
         private void AddVehicleToGarage(Vehicle vehicle)
         {
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             int emptySpot = -1;
             for (int i = 0; i < parkingSpots.Length; i++)
             {

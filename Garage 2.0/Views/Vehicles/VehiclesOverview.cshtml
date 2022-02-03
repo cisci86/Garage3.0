@@ -92,6 +92,7 @@
 @if(ViewBag.Button == null)
 {
     <h4>Occupied spots in the garage is: </h4>
+
 @foreach(var item in ViewData["spotsTaken"] as Vehicle[])
 {
     @if(item != null)
@@ -99,4 +100,5 @@
         <p>Spot number: <strong>@item.ParkingSpot</strong> License Plate: <strong>@item.License</strong> </p>
     }
 }
+
 }
