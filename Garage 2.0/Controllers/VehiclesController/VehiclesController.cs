@@ -29,6 +29,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
+            
             return View(await _context.Vehicle.ToListAsync());
         }
 
@@ -46,7 +47,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-
+            Vehicle v = _context.Vehicle.Find(id);
+            CalculateParkingAmount(v);
             return View(vehicle);
         }
 
@@ -174,7 +176,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-
+            Vehicle v = _context.Vehicle.Find(id);
+            CalculateParkingAmount(v);
             return View(vehicle);
         }
 
@@ -356,6 +359,18 @@ namespace Garage_2._0.Controllers.VehiclesController
                 int garageSpot = item.ParkingSpot - 1;
                 parkingSpots[garageSpot] = item;
             }
+        }
+
+        public void  CalculateParkingAmount(Vehicle vehicle)
+        {
+            
+            double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+            TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
+            double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
+            cost = Math.Round(cost, 2);
+            ViewBag.AmtTitle = "Amount";
+            ViewBag.amount = cost + "Sek";
+            
         }
     }
 }
