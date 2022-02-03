@@ -280,5 +280,10 @@ namespace Garage_2._0.Controllers.VehiclesController
             string GarageStatus= $"Total Capacity of the Garage is: {Total_Garage_Capacity}. Available Free Space is:{Total_Garage_Capacity - recordCount}";
             return GarageStatus;
         }
+        public async Task<IActionResult> ParkingSpots()
+        {
+
+            return View();
+        }
     }
 }

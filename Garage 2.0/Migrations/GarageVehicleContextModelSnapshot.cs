@@ -21,6 +21,26 @@ namespace Garage_2._0.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Garage_2._0.Models.ParkingSpots", b =>
+                {
+                    b.Property<int>("SpotId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpotId"), 1L, 1);
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("License")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SpotId");
+
+                    b.ToTable("ParkingSpots");
+                });
+
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
                 {
                     b.Property<string>("License")
