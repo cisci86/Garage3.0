@@ -4,6 +4,7 @@ using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -21,14 +22,15 @@ namespace Garage_2._0.Controllers.VehiclesController
             SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
         }
-        
-        
-        
+
+
+
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
+            ViewData["spotsTaken"] = parkingSpots;
             return View(await _context.Vehicle.ToListAsync());
         }
 
@@ -71,8 +73,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
 
-                //Check if license already exists in the database. If it exists, don't add the Vehicle.
-                if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            //Check if license already exists in the database. If it exists, don't add the Vehicle.
+            if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
             {
                 return BadRequest();
             }
@@ -214,8 +216,8 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double hourlyRate= _iConfig.GetValue<double>("Price:HourlyRate");
-                double cost=(totalParkedTime.Hours *hourlyRate) + (totalParkedTime.Minutes*hourlyRate/60.0);
+                double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+                double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
                 cost = Math.Round(cost, 2);
                 receipt.Price = cost + "Sek";
             }
@@ -236,18 +238,18 @@ namespace Garage_2._0.Controllers.VehiclesController
                 var m = new List<VehicleViewModel>();
                 return View(nameof(VehiclesOverview), m);
             }
-             var model = _context.Vehicle.Where(v => v.License.Contains(plate));
-                //if (model.Count() == 0)
-                //{
-                //    TempData["Error"] = "Sorry your search did not yield a result";
-                //}
+            var model = _context.Vehicle.Where(v => v.License.Contains(plate));
+            //if (model.Count() == 0)
+            //{
+            //    TempData["Error"] = "Sorry your search did not yield a result";
+            //}
 
             return View(nameof(Index), await model.ToListAsync());
         }
         //this one is used on the Overview
         public async Task<IActionResult> Search(string plate)
         {
-            if(plate == null)
+            if (plate == null)
             {
                 TempData["Error"] = "You need to enter a License plate before you search";
                 var m = new List<VehicleViewModel>();
@@ -270,7 +272,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
             ViewBag.Button = "true";
             return View(nameof(VehiclesOverview), model);
-    }
+        }
 
         public async Task<IActionResult> VehiclesOverview()
         {
@@ -281,25 +283,25 @@ namespace Garage_2._0.Controllers.VehiclesController
                 Make = v.Make,
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
-            string GarageStatus=TotalGarageCapacity_and_FreeSpace();
+            string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
             ViewData["spotsTaken"] = parkingSpots;
             return View(await simpleViewList.ToListAsync());
         }
-        
+
         //Calculating Available free space
         public string TotalGarageCapacity_and_FreeSpace()
         {
-            int recordCount=_context.Vehicle.Count();
+            int recordCount = _context.Vehicle.Count();
             int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
-            string GarageStatus= $"Total Capacity of the Garage is: {Total_Garage_Capacity}. Available Free Space is:{Total_Garage_Capacity - recordCount}";
+            string GarageStatus = $"Total Capacity of the Garage is: {Total_Garage_Capacity}. Available Free Space is:{Total_Garage_Capacity - recordCount}";
             return GarageStatus;
         }
 
         public async Task<IActionResult> Statistics()
         {
             //Create a list of an anonymous class
-            var res = await _context.Vehicle.Select(v => new {Arrival = v.Arrival, Wheels = v.Wheels, Type = v.Type}).ToListAsync();
+            var res = await _context.Vehicle.Select(v => new { Arrival = v.Arrival, Wheels = v.Wheels, Type = v.Type }).ToListAsync();
 
             Statistics statistics = new Statistics
             {
@@ -330,7 +332,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             bool isFull = true;
             for (int i = 0; i < parkingSpots.Length; i++)
             {
-                if(parkingSpots[i] == null)
+                if (parkingSpots[i] == null)
                     isFull = false;
             }
             return isFull;
