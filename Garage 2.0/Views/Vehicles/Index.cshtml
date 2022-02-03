@@ -8,6 +8,10 @@
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
+    @if(ViewBag.garageStatus != null)
+    {
+    <label style="background:pink" class="form-control" >@ViewBag.garageStatus</label>
+    }
 </p>
 @if (TempData["message"] != null)
 {
