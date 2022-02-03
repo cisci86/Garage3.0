@@ -70,6 +70,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             if (ModelState.IsValid)
             {
+                vehicle.License = vehicle.License.ToUpper();
                 vehicle.Arrival = DateTime.Now;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
