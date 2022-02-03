@@ -126,7 +126,6 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (id != vehicle.License)
             {
-                //TODO: show a popup to the user and ridicule them for trying to break our system :D
                 return NotFound();
             }
 
@@ -134,14 +133,13 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 try
                 {
-                    //This was the way I found to not make the arrival date change
+                    //Saves only the params that we want to change
                     _context.Entry(vehicle).Property(v => v.Type).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
                     _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
                     TempData["message"] = $"Your changes for {vehicle.License} has been applied";
-                    //_context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -237,10 +235,14 @@ namespace Garage_2._0.Controllers.VehiclesController
                 return View(nameof(VehiclesOverview), m);
             }
              var model = _context.Vehicle.Where(v => v.License.Contains(plate));
-                //if (model.Count() == 0)
-                //{
-                //    TempData["Error"] = "Sorry your search did not yield a result";
-                //}
+
+            await model.ToListAsync();
+
+            if (!model.Any())
+            {
+                TempData["Error"] = "Sorry your search did not yield a result";
+            }
+            ViewBag.Button = "true";
 
             return View(nameof(Index), await model.ToListAsync());
         }
@@ -320,6 +322,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
+        //Set the parking spots Array to the capacity of the garage.
         private void SetParkingSpots()
         {
             int spotCount = _iConfig.GetValue<int>("GarageCapacity:Capacity");
@@ -335,6 +338,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
             return isFull;
         }
+        //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.
         private void AddVehicleToGarage(Vehicle vehicle)
         {
             int emptySpot = -1;
@@ -349,6 +353,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             parkingSpots[emptySpot] = vehicle;
             vehicle.ParkingSpot = emptySpot + 1;
         }
+        //Goes through the database and gets the parking spot and adds it to the correct place in the array.
         private void AddExistingDataToGarage()
         {
             foreach (var item in _context.Vehicle)
