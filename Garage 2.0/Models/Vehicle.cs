@@ -23,8 +23,7 @@ namespace Garage_2._0.Models
         public int Wheels { get; set; }
         [ReadOnly(true)] //Not sure if this is needed
         public DateTime Arrival { get; set; }
-
-        //public ICollection<ParkingSpots> ParkingSpots { get; set; }
+        public int ParkingSpot { get; set; }
     }
 
 

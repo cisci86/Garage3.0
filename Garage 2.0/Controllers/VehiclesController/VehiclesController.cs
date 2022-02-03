@@ -11,13 +11,15 @@ namespace Garage_2._0.Controllers.VehiclesController
     {
         private readonly GarageVehicleContext _context;
 
-
+        Vehicle[] parkingSpots;
 
         IConfiguration _iConfig;
         public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
         {
             _context = context;
             _iConfig = iConfig;
+            SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
+            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
         }
         
         
@@ -49,6 +51,12 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles/Create
         public IActionResult Create()
         {
+            if (CheckIfGarageIsFull())
+            {
+                TempData["Error"] = "Sorry the garage is already full!";
+
+                return RedirectToAction(nameof(VehiclesOverview));
+            }
             return View();
         }
 
@@ -61,9 +69,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
         {
 
-            
-            //Check if license already exists in the database. If it exists, don't add the Vehicle.
-            if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+                //Check if license already exists in the database. If it exists, don't add the Vehicle.
+                if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
             {
                 return BadRequest();
             }
@@ -72,9 +79,10 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 vehicle.License = vehicle.License.ToUpper();
                 vehicle.Arrival = DateTime.Now;
+                AddVehicleToGarage(vehicle); //Adds vehicle to the first free spot in the Array
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["message"] = $"{vehicle.License} has been successfully parked!";
+                TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
@@ -195,6 +203,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 receipt.Type = vehicle.Type;
                 receipt.License = vehicle.License;
+                receipt.ParkingSpot = vehicle.ParkingSpot;
                 receipt.Arrival = vehicle.Arrival;
                 receipt.CheckOut = DateTime.Now;
 
@@ -308,6 +317,42 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
-
+        private void SetParkingSpots()
+        {
+            int spotCount = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            parkingSpots = new Vehicle[spotCount];
+        }
+        private bool CheckIfGarageIsFull()
+        {
+            bool isFull = true;
+            for (int i = 0; i < parkingSpots.Length; i++)
+            {
+                if(parkingSpots[i] == null)
+                    isFull = false;
+            }
+            return isFull;
+        }
+        private void AddVehicleToGarage(Vehicle vehicle)
+        {
+            int emptySpot = -1;
+            for (int i = 0; i < parkingSpots.Length; i++)
+            {
+                if (parkingSpots[i] == null)
+                {
+                    emptySpot = i;
+                    break;
+                }
+            }
+            parkingSpots[emptySpot] = vehicle;
+            vehicle.ParkingSpot = emptySpot + 1;
+        }
+        private void AddExistingDataToGarage()
+        {
+            foreach (var item in _context.Vehicle)
+            {
+                int garageSpot = item.ParkingSpot - 1;
+                parkingSpots[garageSpot] = item;
+            }
+        }
     }
 }

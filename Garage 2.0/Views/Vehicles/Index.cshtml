@@ -57,6 +57,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Arrival)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParkingSpot)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -84,6 +87,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Arrival)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParkingSpot)
                 </td>
                 <td>
                 <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a> 

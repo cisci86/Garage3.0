@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    [Migration("20220201131709_seed")]
-    partial class seed
+    [Migration("20220203093045_.")]
+    partial class _
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,6 +42,9 @@ namespace Garage_2._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("ParkingSpot")
+                        .HasColumnType("int");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -60,6 +63,7 @@ namespace Garage_2._0.Migrations
                             Color = "Red",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 0,
                             Type = 0,
                             Wheels = 4
                         },
@@ -70,6 +74,7 @@ namespace Garage_2._0.Migrations
                             Color = "White",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 0,
                             Type = 0,
                             Wheels = 4
                         },
@@ -80,6 +85,7 @@ namespace Garage_2._0.Migrations
                             Color = "Yellow",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 0,
                             Type = 2,
                             Wheels = 2
                         },
@@ -90,6 +96,7 @@ namespace Garage_2._0.Migrations
                             Color = "Blue",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 0,
                             Type = 1,
                             Wheels = 8
                         });
