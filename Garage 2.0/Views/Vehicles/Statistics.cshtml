@@ -1,0 +1,34 @@
+﻿@using Garage_2._0.Interfaces
+@model Statistics
+
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<h1>Statistics</h1>
+
+
+<ul class="list-group">
+    @foreach (KeyValuePair<VehicleTypes, int> entry in Model.VehicleTypeCounter)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            @Html.DisplayName($"{Enum.GetName(entry.Key)}")
+            <span class="badge bg-primary rounded-pill">
+            @Html.DisplayName(entry.Value.ToString())
+            </span>
+        </li>
+    }
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        Total wheels in garage
+        <span class="badge bg-primary rounded-pill">
+            @Html.DisplayName(Model.TotalWheelAmount.ToString())
+        </span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        Total cost accumulated
+        <span class="badge bg-primary rounded-pill">
+            @Html.DisplayName($"{Model.TotalCostsGenerated.ToString()} kr")
+        </span>
+    </li>
+</ul>
+
