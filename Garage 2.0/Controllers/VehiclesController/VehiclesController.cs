@@ -301,7 +301,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             int recordCount = _context.Vehicle.Count();
             int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
-            string GarageStatus = $"Total Capacity of the Garage is: {Total_Garage_Capacity} <br> Available Free Space is: {Total_Garage_Capacity - recordCount}";
+            string GarageStatus = $"Total parking spots: <span class='fw-bold'>{Total_Garage_Capacity}</span> <br> Available spots:&emsp;&emsp;<span class='fw-bold'>{Total_Garage_Capacity - recordCount}</span>";
             return GarageStatus;
         }
 

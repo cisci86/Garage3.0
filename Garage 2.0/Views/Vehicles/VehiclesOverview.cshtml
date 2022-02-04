@@ -22,7 +22,7 @@
         @if (ViewBag.garageStatus != null)
         {
         //Html.Raw() can lead to XSS if user controlled.
-            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@Html.Raw(ViewBag.garageStatus)</p>
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2 text-start">@Html.Raw(ViewBag.garageStatus)</p>
         }
     </div>
 </div>
