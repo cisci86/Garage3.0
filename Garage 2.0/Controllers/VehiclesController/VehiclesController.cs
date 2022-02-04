@@ -31,7 +31,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
-            
+            ViewData["spotsTaken"] = parkingSpots;
             return View(await _context.Vehicle.ToListAsync());
         }
 

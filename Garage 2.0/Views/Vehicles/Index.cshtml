@@ -122,21 +122,21 @@
 }
 @if (ViewBag.Button == null)
 {
-    <h4>Occupied spots in the garage is: </h4>
+    <h4 class="text-center">Garage Map</h4>
     <div class="row">
         @foreach (var (item, i) in (ViewData["spotsTaken"] as Vehicle[]).Select((value, i) => (value, i + 1)))
         {
             @if (item != null)
             {
                 <div class="col m-1 p-0 border border-dark" style="display:inline; background-color:red">
-                    <p class="text-center mt-1">
-                        Occupied by @item.License
+                    <p class="text-center mt-3 fw-bold">
+                        @i. @item.License
                     </p>
                 </div>
             }
             else
             {
-                <div class="col m-1 p-0 border border-dark" style="display:inline; background-color:green">
+                <div class="col m-1 p-0 border border-dark" style="display:inline; background-color:#90EE90">
                     <p class="text-center mt-3 fw-bolder">
                         @i. Free
                     </p>
