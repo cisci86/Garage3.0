@@ -129,24 +129,34 @@
             @if (item != null)
             {
                 <div class="col m-1 p-0 border border-dark" style="display:inline; background-color:red">
-                    <p class="text-center mt-3 fw-bold">
-                        @i. @item.License
-                    </p>
+                    <div class="card" style="background-color:red">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">@i</h5>
+                            <p class="card-text text-center">
+                                @item.License
+                            </p>
+                        </div>
+                    </div>
                 </div>
             }
             else
             {
                 <div class="col m-1 p-0 border border-dark" style="display:inline; background-color:#90EE90">
-                    <p class="text-center mt-3 fw-bolder">
-                        @i. Free
-                    </p>
+                    <div class="card" style="background-color:#90EE90">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">@i</h5>
+                            <p class="card-text text-center">
+                                Free
+                            </p>
+                        </div>
+                    </div>
                 </div>
             }
         }
     </div>
 }
 @*If there are something in the viewBag.Button a button will show to go back after a search*@
-@if(ViewBag.Button != null)
+@if (ViewBag.Button != null)
 {
-<a asp-action="Index" class="btn btn-primary">Go Back</a>    
+    <a asp-action="Index" class="btn btn-primary">Go Back</a>
 }
