@@ -1,21 +1,31 @@
 ﻿@using Garage_2._0.Interfaces
 @model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+<div class="row">
+    <div class="col mb-1">
 
-@{
-    ViewData["Title"] = "Overview";
-}
+        @{
+            ViewData["Title"] = "Overview";
+        }
 
-<h1>Overview</h1>
+        <div class="row">
+            <h1>Overview</h1>
+        </div>
 
-@*If there is something in the different viewbags and/or Tempdata different banners will show*@
-<p>
-    <a asp-action="Create" class="btn btn-primary mb-1">Park a vehicle</a>
-    @if(ViewBag.garageStatus != null)
-    {
-    <label style="background:deepskyblue" class="form-control" >@ViewBag.garageStatus</label>
-    }
-    </p>
-     
+        @*If there is something in the different viewbags and/or Tempdata different banners will show*@
+        <div class="row">
+            <div>
+                <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
+            </div>
+        </div>
+    </div>
+    <div class="col text-end">
+        @if (ViewBag.garageStatus != null)
+        {
+        //Html.Raw() can lead to XSS if user controlled.
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@Html.Raw(ViewBag.garageStatus)</p>
+        }
+    </div>
+</div>
 @if (TempData["message"] != null)
 {
     <div class="alert alert-success" id="message">
@@ -24,14 +34,14 @@
 }
 @if (TempData["Error"] != null)
 {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
-         <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
-         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button> 
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
+        <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
     </div>
 }
 
 <form asp-action="Search">
-    <div class="input-group mb-3">
+    <div class="input-group mb-3 mt-1">
         <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
@@ -83,22 +93,29 @@
     </tbody>
 </table>
 @*If there are something in the viewBag.Button a button will show to go back after a search*@
-@if(ViewBag.Button != null)
+@if (ViewBag.Button != null)
 {
-<a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>    
+    <a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>
 }
 
 @*If you not are doing a search an summary of taken spots will show*@
-@if(ViewBag.Button == null)
+@if (ViewBag.Button == null)
 {
-    <h4>Occupied spots in the garage is: </h4>
-
-@foreach(var item in ViewData["spotsTaken"] as Vehicle[])
-{
-    @if(item != null)
+    @if (ViewBag.areEmpty)
     {
-        <p>Spot number: <strong>@item.ParkingSpot</strong> License Plate: <strong>@item.License</strong> </p>
+        <h4>The Garage is empty</h4>
     }
-}
+    else
+    {
+        <h4>Occupied spots in the garage are: </h4>
+
+        @foreach (var item in ViewData["spotsTaken"] as Vehicle[])
+        {
+            @if (item != null)
+            {
+                <p>Spot number: <strong>@item.ParkingSpot</strong> by License Plate: <strong>@item.License</strong> </p>
+            }
+        }
+    }
 
 }

@@ -15,7 +15,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control" asp-items="@Html.GetEnumSelectList<VehicleTypes>()"></select>  
+                <select asp-for="Type" class="form-select" asp-items="@Html.GetEnumSelectList<VehicleTypes>()"></select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="License" />
@@ -39,17 +39,18 @@
                 <input asp-for="Wheels" class="form-control" />
                 <span asp-validation-for="Wheels" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Make changes" class="btn btn-primary" />
+            <div class="mt-2">
+                <input type="submit" value="Make changes" class="btn btn-primary mt-1" />
+                <a asp-action="Index" class="btn btn-primary mt-1">Back to Garage</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" class="btn btn-primary">Back to Garage</a>
-</div>
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }
