@@ -1,29 +1,47 @@
-﻿@model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+﻿@using Garage_2._0.Interfaces
+@model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+<div class="row">
+    <div class="col mb-1">
 
-@{
-    ViewData["Title"] = "Overview";
-}
+        @{
+            ViewData["Title"] = "Overview";
+        }
 
-<h1>Overview</h1>
+        <div class="row">
+            <h1>Overview</h1>
+        </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
-</p>
+        @*If there is something in the different viewbags and/or Tempdata different banners will show*@
+        <div class="row">
+            <div>
+                <a asp-action="Create" class="btn btn-primary">Park a vehicle</a>
+            </div>
+        </div>
+    </div>
+    <div class="col text-end">
+        @if (ViewBag.garageStatus != null)
+        {
+        //Html.Raw() can lead to XSS if user controlled.
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@Html.Raw(ViewBag.garageStatus)</p>
+        }
+    </div>
+</div>
 @if (TempData["message"] != null)
 {
     <div class="alert alert-success" id="message">
-       <i class="fas fa-check-circle pe-1"></i>@TempData["Message"]
+        <i class="fas fa-check-circle pe-1"></i>@TempData["Message"]
     </div>
 }
-@if(TempData["Error"] != null)
+@if (TempData["Error"] != null)
 {
-        <div class="alert alert-danger" id="message">
-         <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
+        <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
     </div>
 }
 
 <form asp-action="Search">
-    <div class="input-group mb-3">
+    <div class="input-group mb-3 mt-1">
         <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
@@ -50,26 +68,54 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.License)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Make)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeSpent)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a> 
-                <a asp-action="Details" asp-route-id="@item.License" class="btn btn-primary">View details</a> 
-                <a asp-action="Delete" asp-route-id="@item.License" class="btn btn-primary">Check out</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.License)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Make)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeSpent)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a>
+                    <a asp-action="Details" asp-route-id="@item.License" class="btn btn-primary">View details</a>
+                    <a asp-action="Delete" asp-route-id="@item.License" class="btn btn-primary">Check out</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+@*If there are something in the viewBag.Button a button will show to go back after a search*@
+@if (ViewBag.Button != null)
+{
+    <a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>
+}
+
+@*If you not are doing a search an summary of taken spots will show*@
+@if (ViewBag.Button == null)
+{
+    @if (ViewBag.areEmpty)
+    {
+        <h4>The Garage is empty</h4>
+    }
+    else
+    {
+        <h4>Occupied spots in the garage are: </h4>
+
+        @foreach (var item in ViewData["spotsTaken"] as Vehicle[])
+        {
+            @if (item != null)
+            {
+                <p>Spot number: <strong>@item.ParkingSpot</strong> by License Plate: <strong>@item.License</strong> </p>
+            }
+        }
+    }
+
+}

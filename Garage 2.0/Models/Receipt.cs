@@ -8,6 +8,7 @@ namespace Garage_2._0.Models
         public VehicleTypes Type { get; set; }
         [Key]
         public string License { get; set; }
+        public int ParkingSpot { get; set; }
         public DateTime Arrival { get; set; }
         public DateTime CheckOut { get; set; }
 

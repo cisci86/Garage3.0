@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    [Migration("20220201131709_seed")]
-    partial class seed
+    [Migration("20220203172221_AddedAnnotations")]
+    partial class AddedAnnotations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,15 +32,21 @@ namespace Garage_2._0.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Make")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Model")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("ParkingSpot")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -60,6 +66,7 @@ namespace Garage_2._0.Migrations
                             Color = "Red",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 1,
                             Type = 0,
                             Wheels = 4
                         },
@@ -70,6 +77,7 @@ namespace Garage_2._0.Migrations
                             Color = "White",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 2,
                             Type = 0,
                             Wheels = 4
                         },
@@ -80,6 +88,7 @@ namespace Garage_2._0.Migrations
                             Color = "Yellow",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 3,
                             Type = 2,
                             Wheels = 2
                         },
@@ -90,6 +99,7 @@ namespace Garage_2._0.Migrations
                             Color = "Blue",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 4,
                             Type = 1,
                             Wheels = 8
                         });

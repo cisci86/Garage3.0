@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    [Migration("20220201130835_Sampledataseeded")]
-    partial class Sampledataseeded
+    [Migration("20220203134055_ChangedSeed")]
+    partial class ChangedSeed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,6 +42,9 @@ namespace Garage_2._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("ParkingSpot")
+                        .HasColumnType("int");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -55,41 +58,45 @@ namespace Garage_2._0.Migrations
                     b.HasData(
                         new
                         {
-                            License = "Abc123",
+                            License = "Eg123",
                             Arrival = new DateTime(2022, 2, 1, 12, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Red",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 1,
                             Type = 0,
                             Wheels = 4
                         },
                         new
                         {
-                            License = "Bcd123",
+                            License = "AS123",
                             Arrival = new DateTime(2022, 2, 1, 13, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "White",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 2,
                             Type = 0,
                             Wheels = 4
                         },
                         new
                         {
-                            License = "Cde123",
+                            License = "MX123",
                             Arrival = new DateTime(2022, 2, 1, 14, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Yellow",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 3,
                             Type = 2,
                             Wheels = 2
                         },
                         new
                         {
-                            License = "Def123",
+                            License = "RR123",
                             Arrival = new DateTime(2022, 2, 1, 15, 9, 28, 0, DateTimeKind.Unspecified),
                             Color = "Blue",
                             Make = "Volvo",
                             Model = "Xc60",
+                            ParkingSpot = 4,
                             Type = 1,
                             Wheels = 8
                         });
