@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Web;
+using System.Linq;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -30,7 +31,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
-
+            
             return View(await _context.Vehicle.ToListAsync());
         }
 
@@ -384,7 +385,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         public void CalculateParkingAmount(Vehicle vehicle)
         {
-
+            
             double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
             TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
             double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
