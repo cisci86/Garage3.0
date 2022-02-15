@@ -76,7 +76,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
 
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
-            if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            if (_context.Vehicle.Find(vehicle.License) != null)
             {
                 return BadRequest();
             }
@@ -97,7 +97,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         [AcceptVerbs("GET", "POST")]
         public IActionResult VerifyLicense(string license)
         {
-            if (_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
+            //Check if license already exists in the database. Sends a warning if it exists
+            if (_context.Vehicle.Find(license) != null)
             {
                 return Json($"License {license} is already in use.");
             }
