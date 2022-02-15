@@ -20,7 +20,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             _context = context;
             _iConfig = iConfig;
-            SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
+            parkingSpots = new Vehicle[_iConfig.GetValue<int>("GarageCapacity:Capacity")]; //Sets the list with a capacity to the garage capacity.
         }
 
 
@@ -28,7 +28,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
+            AddExistingDataToGarage();
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
             ViewData["spotsTaken"] = parkingSpots;
@@ -42,7 +42,6 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             var vehicle = await _context.Vehicle
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
@@ -86,7 +85,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 vehicle.License = vehicle.License.ToUpper();
                 vehicle.Arrival = DateTime.Now;
-                AddVehicleToGarage(vehicle); //Adds vehicle to the first free spot in the Array
+                vehicle.ParkingSpot = FindFirstEmptySpot();
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
@@ -138,12 +137,9 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 try
                 {
-                    //Saves only the params that we want to change
-                    _context.Entry(vehicle).Property(v => v.Type).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
+                    _context.Update(vehicle);
+                    _context.Entry(vehicle).Property(v => v.Arrival).IsModified = false; //Makes sure that the Arrival time don't change
+                    _context.Entry(vehicle).Property(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
                     TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     await _context.SaveChangesAsync();
                 }
@@ -329,12 +325,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
-        //Set the parking spots Array to the capacity of the garage.
-        private void SetParkingSpots()
-        {
-            int spotCount = _iConfig.GetValue<int>("GarageCapacity:Capacity");
-            parkingSpots = new Vehicle[spotCount];
-        }
+       
         private bool CheckIfGarageIsFull()
         {
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
@@ -358,7 +349,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         }
         //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.
-        private void AddVehicleToGarage(Vehicle vehicle)
+        private int FindFirstEmptySpot()
         {
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             int emptySpot = -1;
@@ -370,8 +361,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     break;
                 }
             }
-            parkingSpots[emptySpot] = vehicle;
-            vehicle.ParkingSpot = emptySpot + 1;
+            return emptySpot + 1;
         }
         //Goes through the database and gets the parking spot and adds it to the correct place in the array.
         private void AddExistingDataToGarage()
