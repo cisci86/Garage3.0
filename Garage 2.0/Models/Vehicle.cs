@@ -27,7 +27,8 @@ namespace Garage_2._0.Models
         [ReadOnly(true)]
         public DateTime Arrival { get; set; }
         public int ParkingSpot { get; set; }
+        public Member owner { get; set; }
     }
 
-
+    
 }

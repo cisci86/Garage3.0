@@ -12,14 +12,13 @@ namespace Garage_2._0.Controllers.VehiclesController
     public class VehiclesController : Controller
     {
         private readonly GarageVehicleContext _context;
-
         Vehicle[] parkingSpots;
-
-        IConfiguration _iConfig;
-        public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
+        public VehiclesController(GarageVehicleContext context,IConfiguration config)
         {
             _context = context;
-            _iConfig = iConfig;
+            Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
+            Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
+
             SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
         }
 
@@ -28,7 +27,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
+            AddExistingDataToGarage();
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
             ViewData["spotsTaken"] = parkingSpots;
@@ -42,7 +41,6 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             var vehicle = await _context.Vehicle
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
@@ -77,7 +75,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
 
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
-            if (_context.Vehicle.Where(v => v.License == vehicle.License).ToList().Count > 0)
+            if (_context.Vehicle.Find(vehicle.License) != null)
             {
                 return BadRequest();
             }
@@ -86,7 +84,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 vehicle.License = vehicle.License.ToUpper();
                 vehicle.Arrival = DateTime.Now;
-                AddVehicleToGarage(vehicle); //Adds vehicle to the first free spot in the Array
+                vehicle.ParkingSpot = FindFirstEmptySpot();
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
@@ -98,7 +96,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         [AcceptVerbs("GET", "POST")]
         public IActionResult VerifyLicense(string license)
         {
-            if (_context.Vehicle.Where(v => v.License == license).ToList().Count > 0)
+            //Check if license already exists in the database. Sends a warning if it exists
+            if (_context.Vehicle.Find(license) != null)
             {
                 return Json($"License {license} is already in use.");
             }
@@ -138,12 +137,9 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 try
                 {
-                    //Saves only the params that we want to change
-                    _context.Entry(vehicle).Property(v => v.Type).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
+                    _context.Update(vehicle);
+                    _context.Entry(vehicle).Property(v => v.Arrival).IsModified = false; //Makes sure that the Arrival time don't change
+                    _context.Entry(vehicle).Property(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
                     TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     await _context.SaveChangesAsync();
                 }
@@ -177,8 +173,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            Vehicle v = _context.Vehicle.Find(id);
-            CalculateParkingAmount(v);
+            CalculateParkingAmount(vehicle);
             return View(vehicle);
         }
 
@@ -218,7 +213,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+                double hourlyRate = Global.HourlyRate;
                 double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
                 cost = Math.Round(cost, 2);
                 receipt.Price = cost + "Sek";
@@ -300,7 +295,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         public string TotalGarageCapacity_and_FreeSpace()
         {
             int recordCount = _context.Vehicle.Count();
-            int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            int Total_Garage_Capacity = Global.Garagecapacity;
             string GarageStatus = $"Total parking spots: <span class='fw-bold'>{Total_Garage_Capacity}</span> <br> Available spots:&emsp;&emsp;<span class='fw-bold'>{Total_Garage_Capacity - recordCount}</span>";
             return GarageStatus;
         }
@@ -315,7 +310,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TotalWheelAmount = res.Sum(r => r.Wheels),
                 TotalCostsGenerated = res.Sum(v =>
                 {
-                    double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+                    double hourlyRate = Global.HourlyRate;
                     TimeSpan duration = DateTime.Now.Subtract(v.Arrival);
                     double cost = (duration.Hours + (duration.Minutes * 1.0 / 60)) * hourlyRate;
                     return Math.Round(cost, 2);
@@ -332,7 +327,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         //Set the parking spots Array to the capacity of the garage.
         private void SetParkingSpots()
         {
-            int spotCount = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            int spotCount = Global.Garagecapacity;
             parkingSpots = new Vehicle[spotCount];
         }
         private bool CheckIfGarageIsFull()
@@ -358,7 +353,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         }
         //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.
-        private void AddVehicleToGarage(Vehicle vehicle)
+        private int FindFirstEmptySpot()
         {
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
             int emptySpot = -1;
@@ -370,8 +365,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     break;
                 }
             }
-            parkingSpots[emptySpot] = vehicle;
-            vehicle.ParkingSpot = emptySpot + 1;
+            return emptySpot + 1;
         }
         //Goes through the database and gets the parking spot and adds it to the correct place in the array.
         private void AddExistingDataToGarage()
@@ -386,7 +380,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         public void CalculateParkingAmount(Vehicle vehicle)
         {
             
-            double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+            double hourlyRate = Global.HourlyRate;
             TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
             double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
             cost = Math.Round(cost, 2);
