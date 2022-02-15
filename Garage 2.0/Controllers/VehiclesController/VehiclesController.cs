@@ -47,8 +47,8 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            Vehicle v = _context.Vehicle.Find(id);
-            CalculateParkingAmount(v);
+            
+            CalculateParkingAmount(vehicle);
             return View(vehicle);
         }
 
