@@ -28,6 +28,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
+            AddExistingDataToGarage();
             string GarageStatus = TotalGarageCapacity_and_FreeSpace();
             ViewBag.garageStatus = GarageStatus;
             ViewData["spotsTaken"] = parkingSpots;
@@ -136,12 +137,9 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 try
                 {
-                    //Saves only the params that we want to change
-                    _context.Entry(vehicle).Property(v => v.Type).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Color).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Make).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Model).IsModified = true;
-                    _context.Entry(vehicle).Property(v => v.Wheels).IsModified = true;
+                    _context.Update(vehicle);
+                    _context.Entry(vehicle).Property(v => v.Arrival).IsModified = false; //Makes sure that the Arrival time don't change
+                    _context.Entry(vehicle).Property(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
                     TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     await _context.SaveChangesAsync();
                 }
