@@ -13,13 +13,11 @@ namespace Garage_2._0.Controllers.VehiclesController
     {
         private readonly GarageVehicleContext _context;
         Vehicle[] parkingSpots;
-        IConfiguration _config;
         public VehiclesController(GarageVehicleContext context,IConfiguration config)
         {
             _context = context;
-            _config = config;
-            Global.Garagecapacity = _config.GetValue<int>("GarageCapacity:Capacity");
-            Global.HourlyRate = _config.GetValue<double>("Price:HourlyRate");
+            Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
+            Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
 
             SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
         }
@@ -329,7 +327,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         //Set the parking spots Array to the capacity of the garage.
         private void SetParkingSpots()
         {
-            int spotCount = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            int spotCount = Global.Garagecapacity;
             parkingSpots = new Vehicle[spotCount];
         }
         private bool CheckIfGarageIsFull()
