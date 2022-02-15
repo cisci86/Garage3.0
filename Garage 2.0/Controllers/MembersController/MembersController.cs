@@ -22,7 +22,8 @@ namespace Garage_2._0.Controllers
         // GET: Members
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Member.ToListAsync());
+            
+            return View(await _context.Member.Include(m => m.Vehicles.Where(w => w.ParkingSpot != null)).ToListAsync());
         }
 
         // GET: Members/Details/5
