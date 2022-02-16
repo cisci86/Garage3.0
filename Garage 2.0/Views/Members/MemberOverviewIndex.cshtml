@@ -5,16 +5,38 @@
 }
 
 <h1 class="text-primary text-center">MemberOverview</h1>
+<form asp-action="Sorting">
+<div class="form-check-inline">
+         <b>Sort By: &nbsp;  </b>
+  <input class="form-check-input" type="radio" name="Sort" value="twochar" "Sort", viewBag.CurrentFilter as string>
+  <label class="form-check-label" for="Sort">
+    First 2 Characters in the Name
+  </label>
+  </div>
 
+     <div class="form-check-inline">
+  <input class="form-check-input" type="radio" name="Sort" value="ascii">
+  <label class="form-check-label" for="Sort">
+    Ascii
+  </label>
+
+  &nbsp;
+  
+   <button type="submit" class="btn btn-primary">Sort</button>
+</div>
+</form>
+<br />
 
 <table class="table" border="1">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SocialSecurityNumber)
+                @Html.DisplayNameFor(model => model.SocialSecurityNumber) 
             </th>
+            
            <th>
-                @Html.ActionLink("First Name", "MemberOverviewIndex", new { sortOrder = ViewBag.NameSortParm }) 
+                @Html.ActionLink("First Name", "MemberOverviewIndex", new {sortOrder = ViewBag.NameSortParm }) 
+                 
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
