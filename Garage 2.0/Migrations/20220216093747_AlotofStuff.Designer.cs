@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    partial class GarageVehicleContextModelSnapshot : ModelSnapshot
+    [Migration("20220216093747_AlotofStuff")]
+    partial class AlotofStuff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,13 +75,16 @@ namespace Garage_2._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("MemberId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("OwnerSocialSecurityNumber")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ParkingSpot")
                         .HasColumnType("int");
@@ -92,7 +97,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("License");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("OwnerSocialSecurityNumber");
 
                     b.HasIndex("TypeName");
 
@@ -154,7 +159,7 @@ namespace Garage_2._0.Migrations
                 {
                     b.HasOne("Garage_2._0.Models.Member", "Owner")
                         .WithMany("Vehicles")
-                        .HasForeignKey("MemberId");
+                        .HasForeignKey("OwnerSocialSecurityNumber");
 
                     b.HasOne("Garage_2._0.Models.VehicleType", "Type")
                         .WithMany()

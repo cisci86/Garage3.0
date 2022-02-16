@@ -1,5 +1,4 @@
 ﻿#nullable disable
-using Garage_2._0.Interfaces;
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -319,9 +318,19 @@ namespace Garage_2._0.Controllers.VehiclesController
                 })
             };
 
-            foreach (VehicleTypes type in Enum.GetValues(typeof(VehicleTypes)))
+            //ToDo Get a list of class VehicleType
+            List<VehicleType> vehicleTypes = new List<VehicleType>();
+
+            //Initialise the statistics vehicle type counter
+            foreach (VehicleType type in vehicleTypes)
             {
-                statistics.VehicleTypeCounter.Add(type, res.Where(v => v.Type == type).Count());
+                statistics.VehicleTypeCounter.Add(type.Name, 0);
+            }
+
+            //Count each vehicle and count them
+            foreach (Vehicle vehicle in _context.Vehicle)
+            {
+                statistics.VehicleTypeCounter[vehicle.Type.Name]++;
             }
 
             return View(statistics);
@@ -385,5 +394,22 @@ namespace Garage_2._0.Controllers.VehiclesController
             ViewBag.amount = cost + "Sek";
 
         }
+
+        //ToDo Add to Vehicle View
+        //Lists all vehicles type, license and parked time as well as their owners and their membership
+        public async Task<IActionResult> VehicleMemberView()
+        {
+            var newList = await _context.Vehicle
+                .Select(v => new {
+                    License = v.License,
+                    TimeSpent = DateTime.Now.Subtract(v.Arrival),
+                    Owner = v.Owner.Name,
+                    Membership = v.Owner.Membership.Type,
+                    Type = v.Type.Name
+                } )
+                .ToListAsync();
+            return View(newList);
+        }
     }
 }
+    

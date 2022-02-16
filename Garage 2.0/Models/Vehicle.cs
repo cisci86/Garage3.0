@@ -7,9 +7,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Garage_2._0.Models
 {
-    public class Vehicle : IVehicle
+    public class Vehicle
     {
-        public VehicleTypes Type { get; set; }
+        [Required]
+        public VehicleType Type { get; set; }
         [Required]
         [Key]
         [Remote(action: "VerifyLicense", controller: "Vehicles")]
@@ -27,7 +28,9 @@ namespace Garage_2._0.Models
         [ReadOnly(true)]
         public DateTime Arrival { get; set; }
         public int ParkingSpot { get; set; }
-        public Member owner { get; set; }
+        [Required]
+        public string MemberId { get; set; }
+        public Member Owner { get; set; }
     }
 
     

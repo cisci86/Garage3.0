@@ -1,5 +1,4 @@
-﻿@using Garage_2._0.Interfaces
-@model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+﻿@model IEnumerable<Garage_2._0.Models.VehicleViewModel>
 <div class="row">
     <div class="col mb-1">
 
@@ -72,7 +71,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Type)
+                    @Html.DisplayFor(modelItem => item.Type.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.License)
