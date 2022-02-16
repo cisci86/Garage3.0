@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
+using AutoMapper;
 
 namespace Garage_2._0.Controllers
 {
     public class MembersController : Controller
     {
         private readonly GarageVehicleContext _context;
+        private readonly IMapper mapper;
 
-        public MembersController(GarageVehicleContext context)
+        public MembersController(GarageVehicleContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
         }
 
         // GET: Members
@@ -54,10 +57,11 @@ namespace Garage_2._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SocialSecurityNumber")] Member member)
+        public async Task<IActionResult> Create(MemberCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+                var member = mapper.Map<Member>(viewModel);
                 _context.Add(member);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

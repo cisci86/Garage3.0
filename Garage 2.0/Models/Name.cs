@@ -1,8 +1,11 @@
-﻿namespace Garage_2._0.Models
+﻿using Garage_2._0.Validation;
+
+namespace Garage_2._0.Models
 {
     public class Name
     {
         public string FirstName { get; set; }
+        [NameAttribute]
         public string LastName { get; set; }
 
         private Name()
