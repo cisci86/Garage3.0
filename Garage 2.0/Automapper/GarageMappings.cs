@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+
 using Garage_2._0.Models;
 
 namespace Garage_2._0.Automapper
@@ -7,7 +8,8 @@ namespace Garage_2._0.Automapper
     {
         public GarageMappings()
         {
-            CreateMap<Member, MemberCreateViewModel>().ReverseMap();
+           // CreateMap<Member, MemberCreateViewModel>().ReverseMap();
+            CreateMap<Member, MemberOverviewModel>();
         }
     }
 }
