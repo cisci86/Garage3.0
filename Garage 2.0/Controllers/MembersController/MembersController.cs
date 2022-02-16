@@ -1,13 +1,8 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Garage_2._0.Models;
 using AutoMapper;
+using Garage_2._0.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage_2._0.Controllers
 {
@@ -27,7 +22,7 @@ namespace Garage_2._0.Controllers
         {
             return View(await _context.Member.ToListAsync());
         }
-       public async Task<IActionResult> MemberOverviewIndex(string sortOrder = "")
+        public async Task<IActionResult> MemberOverviewIndex(string sortOrder="")
         {
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
             var viewmodel = _context.Member.Select(m => new MemberOverViewModel
@@ -35,41 +30,19 @@ namespace Garage_2._0.Controllers
                 SocialSecurityNumber = m.SocialSecurityNumber,
                 FirstName = m.Name.FirstName,
                 Name = m.Name.FirstName + m.Name.LastName
-            });
-            switch (sortOrder)
-            {
-                case "FirstName_desc":
-                    viewmodel = viewmodel.OrderByDescending(x => x.FirstName);
+            }).AsEnumerable();
+            
+                switch (sortOrder)
+                {
+                    case "FirstName_desc":
+                    viewmodel = viewmodel.OrderByDescending(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
 
-                default:
-                    viewmodel = viewmodel.OrderBy(x => x.FirstName);
+                    default:
+                    viewmodel = viewmodel.OrderBy(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
-            }
-            return View(await viewmodel.ToListAsync());
-        }
-        public async Task<IActionResult> Sorting(string Sort)
-        {
-            var viewmodel = _context.Member.Select(m => new MemberOverViewModel
-            {
-                SocialSecurityNumber = m.SocialSecurityNumber,
-                FirstName = m.Name.FirstName,
-                Name = m.Name.FirstName + m.Name.LastName
-            });
-            if (Sort=="twochar")
-            {
-
-                //Sort by first 2 character of Name
-                viewmodel = viewmodel.OrderBy(fn => fn.Name.Substring(0, 2));
-            }
-            else
-            {  
-                // Sort by Ascii character
-                //viewmodel = viewmodel.OrderBy(fn =>  fn.FirstName, StringComparer.Ordinal);
-                viewmodel=viewmodel.OrderBy(fn =>  fn.FirstName);
-            }
-
-            return View(nameof(MemberOverviewIndex), await viewmodel.ToListAsync());
+                }
+            return View(viewmodel);
         }
         // GET: Members/Details/5
         public async Task<IActionResult> Details(string id)
