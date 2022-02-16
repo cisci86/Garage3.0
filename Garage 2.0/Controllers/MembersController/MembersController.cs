@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
+using AutoMapper;
 
 namespace Garage_2._0.Controllers
 {
     public class MembersController : Controller
     {
         private readonly GarageVehicleContext _context;
+        private readonly IMapper mapper;
 
-        public MembersController(GarageVehicleContext context)
+        public MembersController(GarageVehicleContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
         }
 
         // GET: Members
@@ -24,7 +27,16 @@ namespace Garage_2._0.Controllers
         {
             return View(await _context.Member.ToListAsync());
         }
-
+       public async Task<IActionResult> MemberOverviewIndex()
+        {
+            var viewmodel = _context.Member.Select(m => new MemberOverViewModel
+            {
+                SocialSecurityNumber = m.SocialSecurityNumber,
+                FirstName = m.Name.FirstName,
+                Name = m.Name.FirstName + m.Name.LastName
+            });
+            return View(await viewmodel.ToListAsync());
+        }
         // GET: Members/Details/5
         public async Task<IActionResult> Details(string id)
         {
