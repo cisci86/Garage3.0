@@ -66,7 +66,7 @@ namespace Garage_2._0.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(member);
+            return View(viewModel);
         }
 
         // GET: Members/Edit/5

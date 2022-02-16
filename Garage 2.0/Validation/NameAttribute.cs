@@ -11,11 +11,11 @@ namespace Garage_2._0.Validation
             
             if(value is string input)
             {
-                var model = validationContext.ObjectInstance as Member;
+                var model = validationContext.ObjectInstance as MemberCreateViewModel;
                 
                 if(model != null)
                 {
-                    if (model.Name.FirstName != input)
+                    if (model.NameFirstName != input)
                         return ValidationResult.Success;
                     else
                         return new ValidationResult(errorMassage);
