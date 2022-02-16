@@ -1,15 +1,10 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Garage_2._0.Models;
 using AutoMapper;
+using Garage_2._0.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace Garage_2._0.Controllers
+namespace Garage_2._0.Controllers.MembersController
 {
     public class MembersController : Controller
     {
@@ -59,6 +54,9 @@ namespace Garage_2._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MemberCreateViewModel viewModel)
         {
+            if (_context.Member.Find(viewModel.SocialSecurityNumber) != null)
+                return BadRequest();
+
             if (ModelState.IsValid)
             {
                 var member = mapper.Map<Member>(viewModel);
@@ -153,5 +151,19 @@ namespace Garage_2._0.Controllers
         {
             return _context.Member.Any(e => e.SocialSecurityNumber == id);
         }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult CheckForDuplicateMembers(string ssn)
+        {
+            //Check if ssn already exists in the database. Sends a warning if it exists
+            if (_context.Member.Find(ssn) != null)
+            {
+                return Json($"Your social security number: {ssn} is already in use.");
+            }
+            return Json(true);
+        }
     }
+
+
+
 }
