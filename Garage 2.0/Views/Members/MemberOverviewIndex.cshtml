@@ -13,8 +13,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.SocialSecurityNumber)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+           <th>
+                @Html.ActionLink("First Name", "MemberOverviewIndex", new { sortOrder = ViewBag.NameSortParm }) 
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)

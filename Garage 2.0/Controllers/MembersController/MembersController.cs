@@ -27,14 +27,25 @@ namespace Garage_2._0.Controllers
         {
             return View(await _context.Member.ToListAsync());
         }
-       public async Task<IActionResult> MemberOverviewIndex()
+       public async Task<IActionResult> MemberOverviewIndex(string sortOrder)
         {
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
             var viewmodel = _context.Member.Select(m => new MemberOverViewModel
             {
                 SocialSecurityNumber = m.SocialSecurityNumber,
                 FirstName = m.Name.FirstName,
                 Name = m.Name.FirstName + m.Name.LastName
             });
+            switch (sortOrder)
+            {
+                case "FirstName_desc":
+                    viewmodel = viewmodel.OrderByDescending(x => x.FirstName);
+                    break;
+
+                default:
+                    viewmodel = viewmodel.OrderBy(x => x.FirstName);
+                    break;
+            }
             return View(await viewmodel.ToListAsync());
         }
         // GET: Members/Details/5
