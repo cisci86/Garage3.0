@@ -10,7 +10,7 @@ namespace Garage_2._0.Models
         [Required]
         public string MembershipId { get; set; }
         public Membership Membership { get; set; }
-        [Required]
-        public DateTime ExpiryDate { get; set; }
+        //Nullable allowed, for membership that cannot expire
+        public DateTime? ExpiryDate { get; set; }
     }
 }

@@ -392,9 +392,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         }
 
-        //ToDo Add to Vehicle View
-        //Lists all vehicles type, license and parked time as well as their owners and their membership
-        public async Task<IActionResult> VehicleMemberView()
+         public async Task<IActionResult> VehicleMemberView()
         {
             var newList = await _context.Vehicle
                 .Select(v => new VehicleMemberViewModel (v.License, v.Arrival, v.Owner, v.Type.Name) )
