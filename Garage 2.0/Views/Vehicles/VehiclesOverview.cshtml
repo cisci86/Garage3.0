@@ -1,5 +1,6 @@
 ﻿@using Garage_2._0.Interfaces
 @model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+@using Garage_2._0.Models
 <div class="row">
     <div class="col mb-1">
 
@@ -19,10 +20,10 @@
         </div>
     </div>
     <div class="col text-end">
-        @if (ViewBag.garageStatus != null)
+        @if(ViewbagModel.garageStatus!=null)
         {
-        //Html.Raw() can lead to XSS if user controlled.
-            <p class="d-inline-block p-2 rounded primary btn-primary mt-2 text-start">@Html.Raw(ViewBag.garageStatus)</p>
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@ViewbagModel.garageStatus</p>
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@ViewbagModel.freeSpots</p>
         }
     </div>
 </div>
@@ -109,7 +110,7 @@
     {
         <h4>Occupied spots in the garage are: </h4>
 
-        @foreach (var item in ViewData["spotsTaken"] as Vehicle[])
+        @foreach (var item in ViewbagModel.spotsTaken as Vehicle[])
         {
             @if (item != null)
             {

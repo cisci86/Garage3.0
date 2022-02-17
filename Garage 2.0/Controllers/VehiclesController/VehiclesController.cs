@@ -28,9 +28,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> Index()
         {
             AddExistingDataToGarage();
-            string GarageStatus = TotalGarageCapacity_and_FreeSpace();
-            ViewBag.garageStatus = GarageStatus;
-            ViewData["spotsTaken"] = parkingSpots;
+            TotalGarageCapacity_and_FreeSpace();
+            ViewbagModel.spotsTaken = parkingSpots;
             return View(await _context.Vehicle.ToListAsync());
         }
 
@@ -283,21 +282,20 @@ namespace Garage_2._0.Controllers.VehiclesController
                 Make = v.Make,
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
-            string GarageStatus = TotalGarageCapacity_and_FreeSpace();
+            TotalGarageCapacity_and_FreeSpace();
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
-            ViewBag.garageStatus = GarageStatus;
-            ViewData["spotsTaken"] = parkingSpots;
+            ViewbagModel.spotsTaken = parkingSpots;
             CheckIfGarageIsEmpty();
             return View(await simpleViewList.ToListAsync());
         }
 
         //Calculating Available free space
-        public string TotalGarageCapacity_and_FreeSpace()
+        public void TotalGarageCapacity_and_FreeSpace()
         {
             int recordCount = _context.Vehicle.Count();
             int Total_Garage_Capacity = Global.Garagecapacity;
-            string GarageStatus = $"Total parking spots: <span class='fw-bold'>{Total_Garage_Capacity}</span> <br> Available spots:&emsp;&emsp;<span class='fw-bold'>{Total_Garage_Capacity - recordCount}</span>";
-            return GarageStatus;
+            ViewbagModel.garageStatus = $"Total parking spots: {Total_Garage_Capacity}";
+            ViewbagModel.freeSpots=$"Free Space :{Total_Garage_Capacity - recordCount}";
         }
 
         public async Task<IActionResult> Statistics()
