@@ -1,5 +1,7 @@
-﻿@model IEnumerable<Garage_2._0.Models.MemberOverViewModel>
-
+﻿
+@using PagedList
+@using PagedList.Mvc
+@model IPagedList<Garage_2._0.Models.MemberOverViewModel>
 @{
     ViewData["Title"] = "MemberOverviewIndex";
 }
@@ -10,7 +12,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SocialSecurityNumber) 
+                @Html.DisplayNameFor(model => model.First().SocialSecurityNumber) 
             </th>
             
            <th>
@@ -28,7 +30,7 @@
                  }
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @Html.DisplayNameFor(model => model.First().LastName)
             </th>
             
         </tr>
@@ -50,3 +52,7 @@
 }
     </tbody>
 </table>
+<div class="pagination" style="margin-left: 400px">
+    @Html. PagedListPager((IPagedList)Model, page => Url.Action("MemberOverviewIndex", new { page}))
+    
+</div>
