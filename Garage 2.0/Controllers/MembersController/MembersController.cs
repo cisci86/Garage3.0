@@ -4,7 +4,7 @@ using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Garage_2._0.Controllers
+namespace Garage_2._0.Controllers.MembersController
 {
     public class MembersController : Controller
     {
@@ -73,15 +73,19 @@ namespace Garage_2._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SocialSecurityNumber")] Member member)
+        public async Task<IActionResult> Create(MemberCreateViewModel viewModel)
         {
+            if (_context.Member.Find(viewModel.SocialSecurityNumber) != null)
+                return BadRequest();
+
             if (ModelState.IsValid)
             {
+                var member = mapper.Map<Member>(viewModel);
                 _context.Add(member);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(member);
+            return View(viewModel);
         }
 
         // GET: Members/Edit/5
@@ -168,5 +172,19 @@ namespace Garage_2._0.Controllers
         {
             return _context.Member.Any(e => e.SocialSecurityNumber == id);
         }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult CheckForDuplicateMembers(string ssn)
+        {
+            //Check if ssn already exists in the database. Sends a warning if it exists
+            if (_context.Member.Find(ssn) != null)
+            {
+                return Json($"Your social security number: {ssn} is already in use.");
+            }
+            return Json(true);
+        }
     }
+
+
+
 }
