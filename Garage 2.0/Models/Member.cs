@@ -13,7 +13,7 @@ namespace Garage_2._0.Models
         public ICollection<Vehicle> Vehicles { get; set; }
         [Required]
         public string MembershipId { get; set; }
-        public Membership Membership { get; set; }
+        public MemberHasMembership Membership { get; set; }
 
         private Member()
         {
@@ -22,7 +22,7 @@ namespace Garage_2._0.Models
             Membership = null;
         }
 
-        public Member(string socialSecurity, Name name, Membership membership)
+        public Member(string socialSecurity, Name name, MemberHasMembership membership)
         {
             SocialSecurityNumber = socialSecurity;
             Name = name;

@@ -10,6 +10,8 @@ namespace Garage_2._0.Models
         public string Name { get; set; }
         [Required]
         public string Description { get; set; }
+        [Required]
+        public int Size { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
     }
 }

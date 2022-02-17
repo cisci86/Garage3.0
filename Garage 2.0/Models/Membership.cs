@@ -12,7 +12,5 @@ namespace Garage_2._0.Models
         public double BenefitHourly { get; set; }
         [Required]
         public double BenefitBase { get; set; }
-        [Required]
-        public DateTime ExpiryDate { get; set; }
     }
 }

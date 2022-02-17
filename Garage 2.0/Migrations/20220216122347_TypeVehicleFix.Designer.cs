@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    partial class GarageVehicleContextModelSnapshot : ModelSnapshot
+    [Migration("20220216122347_TypeVehicleFix")]
+    partial class TypeVehicleFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,32 +30,13 @@ namespace Garage_2._0.Migrations
 
                     b.Property<string>("MembershipId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SocialSecurityNumber");
 
-                    b.ToTable("Member");
-                });
-
-            modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
-                {
-                    b.Property<string>("MemberId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MembershipId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("MemberId", "MembershipId");
-
-                    b.HasIndex("MemberId")
-                        .IsUnique();
-
                     b.HasIndex("MembershipId");
 
-                    b.ToTable("MemberHasMembership");
+                    b.ToTable("Member");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
@@ -66,6 +49,9 @@ namespace Garage_2._0.Migrations
 
                     b.Property<double>("BenefitHourly")
                         .HasColumnType("float");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Type");
 
@@ -101,7 +87,7 @@ namespace Garage_2._0.Migrations
                     b.Property<int>("ParkingSpot")
                         .HasColumnType("int");
 
-                    b.Property<string>("VehicleTypeName")
+                    b.Property<string>("TypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -112,7 +98,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.HasIndex("VehicleTypeName");
+                    b.HasIndex("TypeName");
 
                     b.ToTable("Vehicle");
                 });
@@ -136,6 +122,12 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
                 {
+                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
+                        .WithMany()
+                        .HasForeignKey("MembershipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("Garage_2._0.Models.Name", "Name", b1 =>
                         {
                             b1.Property<string>("MemberSocialSecurityNumber")
@@ -159,27 +151,10 @@ namespace Garage_2._0.Migrations
                                 .HasForeignKey("MemberSocialSecurityNumber");
                         });
 
+                    b.Navigation("Membership");
+
                     b.Navigation("Name")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
-                {
-                    b.HasOne("Garage_2._0.Models.Member", "Member")
-                        .WithOne("Membership")
-                        .HasForeignKey("Garage_2._0.Models.MemberHasMembership", "MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
-                        .WithMany()
-                        .HasForeignKey("MembershipId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Membership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
@@ -192,7 +167,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasOne("Garage_2._0.Models.VehicleType", "Type")
                         .WithMany("Vehicles")
-                        .HasForeignKey("VehicleTypeName")
+                        .HasForeignKey("TypeName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -203,8 +178,6 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
                 {
-                    b.Navigation("Membership");
-
                     b.Navigation("Vehicles");
                 });
 

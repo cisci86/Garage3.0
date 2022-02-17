@@ -1,8 +1,8 @@
-﻿using Garage_2._0.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 #nullable disable
 
 namespace Garage_2._0.Models
@@ -10,6 +10,7 @@ namespace Garage_2._0.Models
     public class Vehicle
     {
         [Required]
+        public string VehicleTypeName { get; set; }
         public VehicleType Type { get; set; }
         [Required]
         [Key]

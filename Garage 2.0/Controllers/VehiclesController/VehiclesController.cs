@@ -55,7 +55,6 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-
             if (CheckIfGarageIsFull())
             {
                 TempData["Error"] = "Sorry the garage is already full!";
@@ -71,7 +70,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
+        public async Task<IActionResult> Create(Vehicle vehicle)
         {
 
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
@@ -79,6 +78,12 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return BadRequest();
             }
+
+            //ToDo Remove and fix temporary Owner and Member Id
+            /*vehicle.Owner = new Member("594232-5615", new Name("Lisa", "Persson"), new Membership());
+            vehicle.MemberId = vehicle.Owner.SocialSecurityNumber;
+            vehicle.Type = _context.VehicleType.FirstOrDefault(vt => vt.Name == vehicle.VehicleTypeName);
+            vehicle.ParkingSpot = 1;*/
 
             if (ModelState.IsValid)
             {
@@ -126,7 +131,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(string id, Vehicle vehicle)
         {
             if (id != vehicle.License)
             {
@@ -404,7 +409,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     License = v.License,
                     TimeSpent = DateTime.Now.Subtract(v.Arrival),
                     Owner = v.Owner.Name,
-                    Membership = v.Owner.Membership.Type,
+                    Membership = v.Owner.Membership.MembershipId,
                     Type = v.Type.Name
                 } )
                 .ToListAsync();

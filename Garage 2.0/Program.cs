@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Garage_2._0.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GarageVehicleContext>(options =>
@@ -7,6 +8,7 @@ builder.Services.AddDbContext<GarageVehicleContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IVehicleTypeSelectListService, VehicleTypeSelectListService>();
 
 var app = builder.Build();
 

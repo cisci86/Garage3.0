@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Garage_2._0.Models;
 
-    public class GarageVehicleContext : DbContext
+public class GarageVehicleContext : DbContext
+{
+    public GarageVehicleContext(DbContextOptions<GarageVehicleContext> options)
+        : base(options)
     {
-        public GarageVehicleContext (DbContextOptions<GarageVehicleContext> options)
-            : base(options)
-        {
-        }
+    }
 
-        public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
+    public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
+    public DbSet<Garage_2._0.Models.Member> Member { get; set; }
+    public DbSet<VehicleType> VehicleType { get; set; }
+    public DbSet<Membership> Membership { get; set; }
 
     //adds seed data to the database
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        //ToDo fix model builder
         //modelBuilder.Entity<Vehicle>()
         //    .HasData(
         //       new Vehicle { Type = Garage_2._0.Interfaces.VehicleTypes.Car, License = "EGW123", Color="Red", Make="Volvo", Model="Xc60",Wheels=4,Arrival= DateTime.Parse("2022-02-01 12:09:28"), ParkingSpot = 1 },
@@ -39,10 +43,12 @@ using Garage_2._0.Models;
 
         modelBuilder.Entity<Member>()
                     .HasMany(m => m.Vehicles);
+
+        modelBuilder.Entity<MemberHasMembership>()
+                    .HasKey(e => new { e.MemberId, e.MembershipId });
     }
 
     //adds seed data to the database
-    public DbSet<Garage_2._0.Models.Member> Member { get; set; }
 
 
 }
