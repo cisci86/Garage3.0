@@ -174,12 +174,12 @@ namespace Garage_2._0.Controllers.MembersController
         }
 
         [AcceptVerbs("GET", "POST")]
-        public IActionResult CheckForDuplicateMembers(string ssn)
+        public IActionResult CheckForDuplicateMembers(string SocialSecurityNumber)
         {
             //Check if ssn already exists in the database. Sends a warning if it exists
-            if (_context.Member.Find(ssn) != null)
+            if (_context.Member.Find(SocialSecurityNumber) != null)
             {
-                return Json($"Your social security number: {ssn} is already in use.");
+                return Json($"Your social security number: {SocialSecurityNumber} is already in use.");
             }
             return Json(true);
         }
