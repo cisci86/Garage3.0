@@ -1,5 +1,4 @@
 ﻿#nullable disable
-using Garage_2._0.Interfaces;
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,7 +53,6 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-
             if (CheckIfGarageIsFull())
             {
                 TempData["Error"] = "Sorry the garage is already full!";
@@ -70,7 +68,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
+        public async Task<IActionResult> Create(Vehicle vehicle)
         {
 
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
@@ -78,6 +76,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return BadRequest();
             }
+
 
             if (ModelState.IsValid)
             {
@@ -125,7 +124,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Type,License,Color,Make,Model,Wheels")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(string id, Vehicle vehicle)
         {
             if (id != vehicle.License)
             {
@@ -315,9 +314,16 @@ namespace Garage_2._0.Controllers.VehiclesController
                 })
             };
 
-            foreach (VehicleTypes type in Enum.GetValues(typeof(VehicleTypes)))
+            //Initialise the statistics vehicle type counter
+            foreach (VehicleType type in _context.VehicleType)
             {
-                statistics.VehicleTypeCounter.Add(type, res.Where(v => v.Type == type).Count());
+                statistics.VehicleTypeCounter.Add(type.Name, 0);
+            }
+
+            //Count each vehicle and count them
+            foreach (Vehicle vehicle in _context.Vehicle)
+            {
+                statistics.VehicleTypeCounter[vehicle.Type.Name]++;
             }
 
             return View(statistics);
@@ -386,5 +392,14 @@ namespace Garage_2._0.Controllers.VehiclesController
             ViewbagModel.amount = cost + "Sek";
 
         }
+
+         public async Task<IActionResult> VehicleMemberView()
+        {
+            var newList = await _context.Vehicle
+                .Select(v => new VehicleMemberViewModel (v.License, v.Arrival, v.Owner, v.Type.Name) )
+                .ToListAsync();
+            return View(newList);
+        }
     }
 }
+    

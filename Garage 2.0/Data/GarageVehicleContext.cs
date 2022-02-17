@@ -12,6 +12,8 @@ public class GarageVehicleContext : DbContext
 
     public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
     public DbSet<Garage_2._0.Models.Member> Member { get; set; }
+    public DbSet<VehicleType> VehicleType { get; set; }
+    public DbSet<Membership> Membership { get; set; }
 
     //adds seed data to the database
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,6 +39,12 @@ public class GarageVehicleContext : DbContext
 
         modelBuilder.Entity<Member>()
                     .HasMany(m => m.Vehicles);
+
+        modelBuilder.Entity<MemberHasMembership>()
+                    .HasKey(e => new { e.MemberId, e.MembershipId });
+
+
+
     }
     private string MakeSocialSecurityNumber()
     {
