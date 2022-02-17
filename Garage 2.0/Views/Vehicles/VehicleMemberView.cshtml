@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Garage_2._0.Models.VehicleMemberViewModel>
+
+@{
+    ViewData["Title"] = "VehicleMemberView";
+}
+
+<h1>VehicleMemberView</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.License)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeSpent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Membership)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VehicleType)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.License)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeSpent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Membership)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleType)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
