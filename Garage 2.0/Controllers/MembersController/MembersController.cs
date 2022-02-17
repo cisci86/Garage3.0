@@ -29,7 +29,7 @@ namespace Garage_2._0.Controllers.MembersController
             {
                 SocialSecurityNumber = m.SocialSecurityNumber,
                 FirstName = m.Name.FirstName,
-                Name = m.Name.FirstName + m.Name.LastName
+                LastName = m.Name.LastName
             }).AsEnumerable();
             
                 switch (sortOrder)
