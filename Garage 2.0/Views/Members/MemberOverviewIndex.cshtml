@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Garage_2._0.Models.MemberOverViewModel>
+
+@{
+    ViewData["Title"] = "MemberOverviewIndex";
+}
+
+<h1 class="text-primary text-center">MemberOverview</h1>
+
+<table class="table table-bordered table-striped border-3 border-dark">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SocialSecurityNumber) 
+            </th>
+            
+           <th>
+               @Html.ActionLink("First Name", "MemberOverviewIndex", new {sortOrder = ViewBag.NameSortParm }) 
+                @{
+                    if(ViewBag.NameSortParm=="")
+                    {
+                        
+                        <i class='fa fa-sort-down fa-2x' style="color:blue"></i>
+                }
+                else
+                {
+                <i class='fa fa-sort-up fa-2x' style="color:blue"></i>
+                }
+                 }
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>

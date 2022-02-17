@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Garage_2._0.Validation;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 #nullable disable
 
 namespace Garage_2._0.Models
@@ -7,6 +9,7 @@ namespace Garage_2._0.Models
     {
         [Required]
         [Key]
+
         public string SocialSecurityNumber { get; set; }
         [Required]
         public Name Name { get; set; }

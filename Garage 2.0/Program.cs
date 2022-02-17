@@ -1,3 +1,4 @@
+using Garage_2._0.Automapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage_2._0.Services;
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<GarageVehicleContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleTypeSelectListService, VehicleTypeSelectListService>();
+
+builder.Services.AddAutoMapper(typeof(GarageMappings));
 
 var app = builder.Build();
 
