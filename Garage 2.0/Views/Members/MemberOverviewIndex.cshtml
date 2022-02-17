@@ -1,5 +1,6 @@
-﻿
-@model IEnumerable<Garage_2._0.Models.MemberOverViewModel>
+﻿@using Garage_2._0.Validation
+
+@model PaginatedList<Garage_2._0.Models.MemberOverViewModel>
 @{
     ViewData["Title"] = "MemberOverviewIndex";
 }
@@ -10,7 +11,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SocialSecurityNumber) 
+                SocialSecurityNumber
             </th>
             
            <th>
@@ -28,7 +29,7 @@
                  }
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                Last Name
             </th>
             
         </tr>
@@ -50,4 +51,22 @@
 }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="MemberOverviewIndex"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="MemberOverviewIndex"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
 
