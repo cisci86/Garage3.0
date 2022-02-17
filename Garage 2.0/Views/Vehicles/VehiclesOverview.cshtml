@@ -27,16 +27,16 @@
         }
     </div>
 </div>
-@if (TempData["message"] != null)
+@if (ViewbagModel.message != null)
 {
     <div class="alert alert-success" id="message">
-        <i class="fas fa-check-circle pe-1"></i>@TempData["Message"]
+        <i class="fas fa-check-circle pe-1"></i>@ViewbagModel.message
     </div>
 }
-@if (TempData["Error"] != null)
+@if (ViewbagModel.Error != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
-        <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+        <i class="fas fa-exclamation-triangle pe-1"></i>@ViewbagModel.Error
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
     </div>
 }
@@ -94,15 +94,15 @@
     </tbody>
 </table>
 @*If there are something in the viewBag.Button a button will show to go back after a search*@
-@if (ViewBag.Button != null)
+@if (ViewbagModel.Button != null)
 {
     <a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>
 }
 
 @*If you not are doing a search an summary of taken spots will show*@
-@if (ViewBag.Button == null)
+@if (ViewbagModel.Button == null)
 {
-    @if (ViewBag.areEmpty)
+    @if (ViewbagModel.areEmpty)
     {
         <h4>The Garage is empty</h4>
     }

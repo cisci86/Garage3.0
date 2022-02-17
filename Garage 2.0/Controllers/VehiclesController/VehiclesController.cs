@@ -57,7 +57,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             if (CheckIfGarageIsFull())
             {
-                TempData["Error"] = "Sorry the garage is already full!";
+                ViewbagModel.Error = "Sorry the garage is already full!";
 
                 return RedirectToAction(nameof(VehiclesOverview));
             }
@@ -86,7 +86,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 vehicle.ParkingSpot = FindFirstEmptySpot();
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
+                ViewbagModel.message = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
@@ -139,7 +139,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                     _context.Update(vehicle);
                     _context.Entry(vehicle).Property(v => v.Arrival).IsModified = false; //Makes sure that the Arrival time don't change
                     _context.Entry(vehicle).Property(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
-                    TempData["message"] = $"Your changes for {vehicle.License} has been applied";
+                    ViewbagModel.message = $"Your changes for {vehicle.License} has been applied";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -184,7 +184,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             var vehicle = await _context.Vehicle.FindAsync(id);
             _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
-            TempData["message"] = $"{vehicle.License} has been checked out!";
+            ViewbagModel.message = $"{vehicle.License} has been checked out!";
             return RedirectToAction(nameof(VehiclesOverview));
         }
 
@@ -222,7 +222,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             _context.Vehicle.Remove(vehicle);
             _context.SaveChanges();
-            TempData["message"] = $"{vehicle.License} has been checked out";
+            ViewbagModel.message = $"{vehicle.License} has been checked out";
             return View(nameof(ReceiptView), receipt);
         }
         //This one is used on the detailed view
@@ -230,7 +230,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (plate == null)
             {
-                TempData["Error"] = "You need to enter a License plate before you search";
+                ViewbagModel.Error = "You need to enter a License plate before you search";
                 return RedirectToAction(nameof(Index));
             }
             var model = _context.Vehicle.Where(v => v.License.Contains(plate));
@@ -239,7 +239,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             if (!model.Any())
             {
-                TempData["Error"] = "Sorry your search did not yield a result";
+                ViewbagModel.Error = "Sorry your search did not yield a result";
             }
             ViewBag.Button = "true";
 
@@ -250,8 +250,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             if (plate == null)
             {
-                TempData["Error"] = "You need to enter a License plate before you search";
-                ViewBag.Button = "true";
+                ViewbagModel.Error = "You need to enter a License plate before you search";
+                ViewbagModel.Button = "true";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
 
@@ -267,9 +267,9 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             if (!model.Any())
             {
-                TempData["Error"] = "Your search did not yield any results";
+                ViewbagModel.Error = "Your search did not yield any results";
             }
-            ViewBag.Button = "true";
+            ViewbagModel.Button = "true";
             return View(nameof(VehiclesOverview), model);
         }
 
@@ -347,7 +347,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 if (parkingSpots[i] != null)
                     isEmpty = false;
             }
-            ViewBag.areEmpty = isEmpty;
+            ViewbagModel.areEmpty = isEmpty;
 
         }
         //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.

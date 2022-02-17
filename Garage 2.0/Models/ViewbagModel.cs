@@ -2,12 +2,13 @@
 {
     public static class ViewbagModel
     {
-        public static string Message;
+        public static string message;
         public static string Error;
         public static string garageStatus;
         public static string freeSpots;
         public static Vehicle[] spotsTaken;
-        public static string Viewbutton;
+        public static string Button;
+        public static bool areEmpty;
 
     }
 }
