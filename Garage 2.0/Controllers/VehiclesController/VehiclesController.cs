@@ -12,15 +12,14 @@ namespace Garage_2._0.Controllers.VehiclesController
     public class VehiclesController : Controller
     {
         private readonly GarageVehicleContext _context;
-
         Vehicle[] parkingSpots;
-
-        IConfiguration _iConfig;
-        public VehiclesController(GarageVehicleContext context, IConfiguration iConfig)
+        public VehiclesController(GarageVehicleContext context,IConfiguration config)
         {
             _context = context;
-            _iConfig = iConfig;
-            parkingSpots = new Vehicle[_iConfig.GetValue<int>("GarageCapacity:Capacity")]; //Sets the list with a capacity to the garage capacity.
+            Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
+            Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
+
+            SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
         }
 
 
@@ -174,8 +173,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            Vehicle v = _context.Vehicle.Find(id);
-            CalculateParkingAmount(v);
+            CalculateParkingAmount(vehicle);
             return View(vehicle);
         }
 
@@ -215,7 +213,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+                double hourlyRate = Global.HourlyRate;
                 double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
                 cost = Math.Round(cost, 2);
                 receipt.Price = cost + "Sek";
@@ -297,7 +295,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         public string TotalGarageCapacity_and_FreeSpace()
         {
             int recordCount = _context.Vehicle.Count();
-            int Total_Garage_Capacity = _iConfig.GetValue<int>("GarageCapacity:Capacity");
+            int Total_Garage_Capacity = Global.Garagecapacity;
             string GarageStatus = $"Total parking spots: <span class='fw-bold'>{Total_Garage_Capacity}</span> <br> Available spots:&emsp;&emsp;<span class='fw-bold'>{Total_Garage_Capacity - recordCount}</span>";
             return GarageStatus;
         }
@@ -312,7 +310,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TotalWheelAmount = res.Sum(r => r.Wheels),
                 TotalCostsGenerated = res.Sum(v =>
                 {
-                    double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+                    double hourlyRate = Global.HourlyRate;
                     TimeSpan duration = DateTime.Now.Subtract(v.Arrival);
                     double cost = (duration.Hours + (duration.Minutes * 1.0 / 60)) * hourlyRate;
                     return Math.Round(cost, 2);
@@ -326,7 +324,12 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
-       
+        //Set the parking spots Array to the capacity of the garage.
+        private void SetParkingSpots()
+        {
+            int spotCount = Global.Garagecapacity;
+            parkingSpots = new Vehicle[spotCount];
+        }
         private bool CheckIfGarageIsFull()
         {
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
@@ -377,7 +380,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         public void CalculateParkingAmount(Vehicle vehicle)
         {
             
-            double hourlyRate = _iConfig.GetValue<double>("Price:HourlyRate");
+            double hourlyRate = Global.HourlyRate;
             TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
             double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
             cost = Math.Round(cost, 2);
