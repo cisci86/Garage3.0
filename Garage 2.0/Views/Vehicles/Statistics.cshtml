@@ -1,5 +1,4 @@
-﻿@using Garage_2._0.Interfaces
-@model Statistics
+﻿@model Statistics
 
 @{
     ViewData["Title"] = "Statistics";
@@ -9,10 +8,10 @@
 
 
 <ul class="list-group">
-    @foreach (KeyValuePair<VehicleTypes, int> entry in Model.VehicleTypeCounter)
+    @foreach (KeyValuePair<string, int> entry in Model.VehicleTypeCounter)
     {
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            @Html.DisplayName($"{Enum.GetName(entry.Key)}")
+            @Html.DisplayName($"{entry.Key}")
             <span class="badge bg-primary rounded-pill">
             @Html.DisplayName(entry.Value.ToString())
             </span>

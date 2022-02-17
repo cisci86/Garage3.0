@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    partial class GarageVehicleContextModelSnapshot : ModelSnapshot
+    [Migration("20220217150238_fix")]
+    partial class fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,6 +52,8 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("MemberId")
                         .IsUnique();
+
+                    b.HasIndex("MembershipId");
 
                     b.ToTable("MemberHasMembership");
                 });
@@ -163,11 +167,21 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
                 {
-                    b.HasOne("Garage_2._0.Models.Member", null)
+                    b.HasOne("Garage_2._0.Models.Member", "Member")
                         .WithOne("Membership")
                         .HasForeignKey("Garage_2._0.Models.MemberHasMembership", "MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
+                        .WithMany()
+                        .HasForeignKey("MembershipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Membership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
