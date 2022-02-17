@@ -79,11 +79,6 @@ namespace Garage_2._0.Controllers.VehiclesController
                 return BadRequest();
             }
 
-            //ToDo Remove and fix temporary Owner and Member Id
-            /*vehicle.Owner = new Member("594232-5615", new Name("Lisa", "Persson"), new Membership());
-            vehicle.MemberId = vehicle.Owner.SocialSecurityNumber;
-            vehicle.Type = _context.VehicleType.FirstOrDefault(vt => vt.Name == vehicle.VehicleTypeName);
-            vehicle.ParkingSpot = 1;*/
 
             if (ModelState.IsValid)
             {
@@ -323,11 +318,8 @@ namespace Garage_2._0.Controllers.VehiclesController
                 })
             };
 
-            //ToDo Get a list of class VehicleType
-            List<VehicleType> vehicleTypes = new List<VehicleType>();
-
             //Initialise the statistics vehicle type counter
-            foreach (VehicleType type in vehicleTypes)
+            foreach (VehicleType type in _context.VehicleType)
             {
                 statistics.VehicleTypeCounter.Add(type.Name, 0);
             }
@@ -405,13 +397,7 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> VehicleMemberView()
         {
             var newList = await _context.Vehicle
-                .Select(v => new {
-                    License = v.License,
-                    TimeSpent = DateTime.Now.Subtract(v.Arrival),
-                    Owner = v.Owner.Name,
-                    Membership = v.Owner.Membership.MembershipId,
-                    Type = v.Type.Name
-                } )
+                .Select(v => new VehicleMemberViewModel (v.License, v.Arrival, v.Owner, v.Type.Name) )
                 .ToListAsync();
             return View(newList);
         }
