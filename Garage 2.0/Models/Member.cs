@@ -19,14 +19,14 @@ namespace Garage_2._0.Models
         {
             SocialSecurityNumber = null;
             Name = null;
-            Membership = null;
+            MembershipId = null;
         }
 
-        public Member(string socialSecurity, Name name, MemberHasMembership membership)
+        public Member(string socialSecurity, Name name, string memberShipId)
         {
             SocialSecurityNumber = socialSecurity;
             Name = name;
-            Membership = membership;
+            MembershipId = memberShipId;
         }
     }
 }

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage_2._0.Services;
+using Garage_2._0.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GarageVehicleContext>(options =>
@@ -11,6 +13,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleTypeSelectListService, VehicleTypeSelectListService>();
 
 var app = builder.Build();
+
+app.SeedDataAsync().GetAwaiter().GetResult();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
