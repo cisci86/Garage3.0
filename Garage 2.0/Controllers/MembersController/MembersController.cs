@@ -24,7 +24,7 @@ namespace Garage_2._0.Controllers.MembersController
         {
             return View(await _context.Member.ToListAsync());
         }
-        public async Task<IActionResult> MemberOverviewIndex(string sortOrder,int? page)
+        public async Task<IActionResult> MemberOverviewIndex(string sortOrder)
         {
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
             var viewmodel = _context.Member.Select(m => new MemberOverViewModel
@@ -44,7 +44,7 @@ namespace Garage_2._0.Controllers.MembersController
                     viewmodel = viewmodel.OrderBy(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
                 }
-            return View(viewmodel.ToPagedList(page ?? 1,5));
+            return View(viewmodel);
         }
         // GET: Members/Details/5
         public async Task<IActionResult> Details(string id)
