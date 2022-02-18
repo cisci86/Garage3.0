@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    [Migration("20220217150238_fix")]
-    partial class fix
+    [Migration("20220217172947_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,8 +52,6 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("MemberId")
                         .IsUnique();
-
-                    b.HasIndex("MembershipId");
 
                     b.ToTable("MemberHasMembership");
                 });
@@ -167,21 +165,11 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
                 {
-                    b.HasOne("Garage_2._0.Models.Member", "Member")
+                    b.HasOne("Garage_2._0.Models.Member", null)
                         .WithOne("Membership")
                         .HasForeignKey("Garage_2._0.Models.MemberHasMembership", "MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
-                        .WithMany()
-                        .HasForeignKey("MembershipId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Membership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
