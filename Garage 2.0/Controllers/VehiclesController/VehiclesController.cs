@@ -223,14 +223,31 @@ namespace Garage_2._0.Controllers.VehiclesController
         //This one is used on the detailed view
         public async Task<IActionResult> SearchDetailed(string plate, string type)
         {
-            if (plate == null)
+            if (plate == null && type == null)
             {
-                TempData["Error"] = "You need to enter a License plate before you search";
+                TempData["Error"] = "You need to enter a License plate or select Type before you search";
                 return RedirectToAction(nameof(Index));
             }
-            var model = _context.Vehicle.Where(v => v.License.Contains(plate));
+            IQueryable<Vehicle> model = null!;
 
-            await model.ToListAsync();
+            if (plate != null && type == null)
+            {
+                model = _context.Vehicle.Where(v => v.License.Contains(plate));
+                await model.ToListAsync();
+            }
+
+            else if(plate == null && type != null)
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name.Contains(type));
+                await model.ToListAsync();
+            }
+
+            else
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name.Contains(type))
+                                         .Where(v => v.License.Contains(plate));
+                await model.ToListAsync();
+            }
 
             if (!model.Any())
             {
