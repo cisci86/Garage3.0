@@ -11,11 +11,11 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model=>model.First().SocialSecurityNumber)
+                @Html.DisplayFor(model=>model.SocialSecurityNumber)
             </th>
             
            <th>
-                <a asp-action="MemberOverviewIndex" asp-route-sortOrder="@ViewBag.NameSortParm">@Html.DisplayNameFor(model=>model.First().FirstName) </a>
+                <a asp-action="MemberOverviewIndex" asp-route-sortOrder="@ViewBag.NameSortParm">@Html.DisplayFor(model=>model.FirstName) </a>
                 @{
                     if(ViewBag.NameSortParm=="")
                     {
@@ -29,7 +29,7 @@
                  }
             </th>
             <th>
-                @Html.DisplayNameFor(model=>model.First().LastName)
+                @Html.DisplayFor(model=>model.LastName)
             </th>
             
         </tr>

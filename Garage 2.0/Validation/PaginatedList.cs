@@ -6,6 +6,9 @@ namespace Garage_2._0.Validation
     {
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
+        public string SocialSecurityNumber { get; } = "SSN";
+        public string FirstName { get; } = "First name";
+        public string LastName { get; } = "Last name";
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
