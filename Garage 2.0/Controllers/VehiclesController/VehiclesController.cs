@@ -166,6 +166,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
 
             var vehicle = await _context.Vehicle
+                .Include(v => v.Owner)
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
             {
@@ -196,11 +197,16 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> ReceiptView(string id)
         {
             //regNo should come from check-out so
-            Vehicle vehicle = await _context.Vehicle.FindAsync(id);
+            Vehicle vehicle = await _context.Vehicle
+                                .Include(v => v.Owner)
+                                .FirstOrDefaultAsync(v => v.License == id);
+
             Receipt receipt = new Receipt();
             if (vehicle != null)
             {
-                receipt.Type = vehicle.Type;
+                receipt.MemberName = vehicle.Owner.Name.FirstName + vehicle.Owner.Name.LastName;
+                receipt.MemberId = vehicle.MemberId;
+                receipt.VehicleTypeName = vehicle.VehicleTypeName;
                 receipt.License = vehicle.License;
                 receipt.ParkingSpot = vehicle.ParkingSpot;
                 receipt.Arrival = vehicle.Arrival;

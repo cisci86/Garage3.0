@@ -4,7 +4,10 @@ namespace Garage_2._0.Models
 {
     public class Receipt
     {
-        public VehicleType Type { get; set; }
+        
+        public string MemberName { get; set; }
+        public string MemberId { get; set; }
+        public string VehicleTypeName { get; set; }
         [Key]
         public string License { get; set; }
         public int ParkingSpot { get; set; }
