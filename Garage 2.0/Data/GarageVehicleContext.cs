@@ -1,19 +1,26 @@
 ﻿#nullable disable
+using Garage_2._0;
 using Garage_2._0.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class GarageVehicleContext : DbContext
 {
-    private Random gen  = new Random();
+    private Random gen = new Random();
     public GarageVehicleContext(DbContextOptions<GarageVehicleContext> options)
         : base(options)
     {
+        IConfigurationRoot config = new ConfigurationBuilder()
+                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+        Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
     }
 
     public DbSet<Garage_2._0.Models.Vehicle> Vehicle { get; set; }
     public DbSet<Garage_2._0.Models.Member> Member { get; set; }
     public DbSet<VehicleType> VehicleType { get; set; }
     public DbSet<Membership> Membership { get; set; }
+    public DbSet<ParkingSpot> ParkinSpot { get; set; }
 
     //adds seed data to the database
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,8 +42,23 @@ public class GarageVehicleContext : DbContext
         modelBuilder.Entity<MemberHasMembership>()
                     .HasKey(e => new { e.MemberId, e.MembershipId });
 
-
-
+        modelBuilder.Entity<ParkingSpot>()
+                    .HasData(
+                    GetParkingSpots());
+    }
+    private static IEnumerable<ParkingSpot> GetParkingSpots()
+    {
+        var parkingSpots = new List<ParkingSpot>();
+        for (int i = 0; i < Global.Garagecapacity; i++)
+        {
+            var spot = new ParkingSpot
+            {
+                Id = i + 1,
+                Available = true
+            };
+            parkingSpots.Add(spot);
+        }
+        return parkingSpots;
     }
     private string MakeSocialSecurityNumber()
     {
@@ -48,10 +70,10 @@ public class GarageVehicleContext : DbContext
         string firstNineNumbers = birthDate + birthPlace + gender;
         string controlnumber = generateControlNumber(firstNineNumbers);
         string SSN = firstNineNumbers + controlnumber;
-        if(Member.Find(SSN) == null)
+        if (Member.Find(SSN) == null)
             return firstNineNumbers + controlnumber;
         else
-           return MakeSocialSecurityNumber();
+            return MakeSocialSecurityNumber();
     }
     private string generateControlNumber(string nineDigits)
     {

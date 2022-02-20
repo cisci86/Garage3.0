@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Garage_2._0.Extensions;
 using Garage_2._0.Models;
 
 namespace Garage_2._0.Data
@@ -8,14 +9,13 @@ namespace Garage_2._0.Data
         private static Faker faker = null;
         private static Random gen = new Random();
         private static GarageVehicleContext? _context = null;
-        private static IConfiguration _config = null!;
+        private static int capasity;
 
         public static async Task Start(GarageVehicleContext context, IConfiguration config)
         {
 
             faker = new Faker("sv");
             _context = context;
-            _config = config;
             var memberShip = await GetMembership();
             IEnumerable<Member> members = null;
             IEnumerable<MemberHasMembership> hasMemberships = null;
@@ -29,17 +29,18 @@ namespace Garage_2._0.Data
                 hasMemberships = GetMemberHasMembership(members, memberShip.First());
                 await context.AddRangeAsync(hasMemberships);
             }
-            else 
+            else
                 members = context.Member.ToList();
-            
-           
+
+
 
 
             if (!_context.Vehicle.Any())
             {
                 var vehicleTypes = await GetVehicleTypes();
                 List<string> licensPlates = GenerateLicensPlate(10);
-                var parkingspots = GetParkingSpots(10);
+                var parkingspots = _context.ParkinSpot.ToList();
+
                 vehicles = GetVehicles(licensPlates, members.ToList(), vehicleTypes, parkingspots);
                 await context.AddRangeAsync(vehicles);
             }
@@ -137,6 +138,8 @@ namespace Garage_2._0.Data
                     Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
                     Size = 1
                 };
+                vehicleTypes.Add(bananamobile);
+
                 await _context.AddRangeAsync(vehicleTypes);
                 return vehicleTypes;
             }
@@ -144,7 +147,7 @@ namespace Garage_2._0.Data
 
         }
 
-        private static IEnumerable<Vehicle> GetVehicles(List<string> license, List<Member> members, List<VehicleType> vehicleTypes, List<int> parkingspots)
+        private static IEnumerable<Vehicle> GetVehicles(List<string> license, List<Member> members, List<VehicleType> vehicleTypes, List<ParkingSpot> parkingspots)
         {
             Faker faker2 = new Faker("en");
             var vehicles = new List<Vehicle>();
@@ -153,13 +156,19 @@ namespace Garage_2._0.Data
                 var make = faker.Vehicle.Manufacturer();
                 var model = faker.Vehicle.Model();
                 var licensePlate = license[i];
-                var arrival = faker.Date.Past(10, DateTime.Now);
+                var arrival = faker.Date.Between(DateTime.Now.AddDays(-30) , DateTime.Now);
                 var rand = gen.Next(0, members.Count());
                 var member = members[rand];
                 var rand2 = gen.Next(0, vehicleTypes.Count());
                 var vehicleType = vehicleTypes[rand2];
                 var color = faker2.Commerce.Color();
-                var parkingspot = parkingspots[i];
+                ParkingSpot parkingspot;
+                do
+                {
+                    var randomSpot = gen.Next(parkingspots.Count);
+                    parkingspot = parkingspots[randomSpot-1];
+                } while (vehicles.Find(v => v.ParkingSpot == parkingspot.Id) != null);
+
                 var wheels = gen.Next(0, 10);
                 var vehicle = new Vehicle
                 {
@@ -170,12 +179,15 @@ namespace Garage_2._0.Data
                     Model = model,
                     Arrival = arrival,
                     MemberId = member.SocialSecurityNumber,
-                    ParkingSpot = parkingspot,
+                    ParkingSpot = parkingspot.Id,
                     Color = color,
                     Wheels = wheels,
                     Owner = member
                 };
                 vehicles.Add(vehicle);
+
+                parkingspot.Available = false;       
+                parkingspot.Vehicle = vehicle;
             }
             return vehicles;
         }
@@ -247,19 +259,6 @@ namespace Garage_2._0.Data
                 else i--;
             }
             return licens;
-        }
-        private static List<int> GetParkingSpots(int howMany)
-        {
-            List<int> parkingSpots = new List<int>();
-            for (int i = 0;i < howMany; i++)
-            {
-                var spot = (gen.Next(1, _config.GetValue<int>("GarageCapacity:Capacity")));
-                if (!parkingSpots.Contains(spot))
-                    parkingSpots.Add(spot);
-                else
-                    i--;
-            }
-            return parkingSpots;
         }
     }
 }
