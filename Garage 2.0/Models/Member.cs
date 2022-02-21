@@ -1,35 +1,37 @@
 ﻿using Garage_2._0.Validation;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 #nullable disable
 
 namespace Garage_2._0.Models
 {
     public class Member
     {
-        [Required]
         [Key]
+
         
+
+       // [DatabaseGenerated(DatabaseGeneratedOption.None)]
+
         public string SocialSecurityNumber { get; set; }
         [Required]
         public Name Name { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
         [Required]
-        public string MembershipId { get; set; }
-        public MemberHasMembership Membership { get; set; }
+       // public string MemberHasMembershipId { get; internal set; }
+        public ICollection<MemberHasMembership> Memberships { get; set; } = new List<MemberHasMembership>();
 
         private Member()
         {
             SocialSecurityNumber = null;
             Name = null;
-            MembershipId = null;
         }
 
-        public Member(string socialSecurity, Name name, string memberShipId)
+        public Member(string socialSecurity, Name name)
         {
             SocialSecurityNumber = socialSecurity;
             Name = name;
-            MembershipId = memberShipId;
         }
     }
 }

@@ -20,6 +20,7 @@ public class GarageVehicleContext : DbContext
     public DbSet<Garage_2._0.Models.Member> Member { get; set; }
     public DbSet<VehicleType> VehicleType { get; set; }
     public DbSet<Membership> Membership { get; set; }
+    public DbSet<MemberHasMembership> MemberHasMembership { get; set; }
     public DbSet<ParkingSpot> ParkinSpot { get; set; }
 
     //adds seed data to the database
@@ -38,11 +39,7 @@ public class GarageVehicleContext : DbContext
 
         modelBuilder.Entity<Member>()
                     .HasMany(m => m.Vehicles);
-
-        modelBuilder.Entity<MemberHasMembership>()
-                    .HasKey(e => new { e.MemberId, e.MembershipId });
         
-
         modelBuilder.Entity<ParkingSpot>()
                     .HasData(
                     GetParkingSpots());

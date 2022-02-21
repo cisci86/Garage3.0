@@ -10,8 +10,10 @@ namespace Garage_2._0.Automapper
         {
             CreateMap<Member, MemberCreateViewModel>().ReverseMap();
 
-
             CreateMap<Member, MemberEditviewModel>().ReverseMap();
+
+            CreateMap<Vehicle, VehicleCreateViewModel>().ReverseMap();
+
         }
     }
 }
