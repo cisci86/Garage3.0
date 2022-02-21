@@ -178,7 +178,7 @@ namespace Garage_2._0.Controllers.MembersController
             var member = await _context.Member.FindAsync(id);
             _context.Member.Remove(member);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MemberOverviewIndex));
         }
 
         private bool MemberExists(string id)
