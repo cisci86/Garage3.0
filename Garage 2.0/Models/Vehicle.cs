@@ -31,6 +31,7 @@ namespace Garage_2._0.Models
         public int ParkingSpotId { get; set; }
         public ParkingSpot ParkingSpot { get; set; }
         [Required]
+        [Remote(action: "VerifyMember", controller: "Vehicles")]
         public string MemberId { get; set; }
         public Member Owner { get; set; }
     }
