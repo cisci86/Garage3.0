@@ -26,7 +26,7 @@ namespace Garage_2._0.Data
                 fakeSSNs = MakeSocialSecurityNumber(15);
                 members = GetMember(fakeSSNs, memberShip.Find(m => m.Type == "Standard")!);
                 await context.AddRangeAsync(members);
-                hasMemberships = GetMemberHasMembership(members, memberShip.First());
+                hasMemberships = GetMemberHasMembership(members, memberShip.Find(m => m.Type == "Standard")!);
                 await context.AddRangeAsync(hasMemberships);
             }
             else
