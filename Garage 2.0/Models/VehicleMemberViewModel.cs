@@ -5,7 +5,7 @@ namespace Garage_2._0.Models
     {
         public string License { get; set; }
         public string Owner { get; set; }
-        public TimeSpan TimeSpent { get; set; }
+        public string TimeSpent { get; set; }
         public string Membership { get; set; }
         public string VehicleType { get; set; }
 
@@ -22,9 +22,11 @@ namespace Garage_2._0.Models
         {
             License = license;
             Owner = $"{owner.Name.FirstName} {owner.Name.LastName}";
-            Membership = owner.MembershipId;
+            //ToDo check if it is correct
+            Membership = owner.Memberships.Last().MembershipId;
             VehicleType = vehicleType;
-            TimeSpent = DateTime.Now.Subtract(currentTime);
+            TimeSpan _t = DateTime.Now.Subtract(currentTime);
+            TimeSpent = $"{_t.Days} days, {_t.Hours} hours, {_t.Minutes} minutes";
         }
 
     }
