@@ -26,8 +26,8 @@
     </dl>
 
     <form asp-action="">
-        <input type="hidden" asp-for="SocialSecurityNumber" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> 
+@*        <input type="hidden" asp-for="SocialSecurityNumber" />
+*@        <input type="submit" value="Delete" class="btn btn-danger" asp-action = "Delete"/> 
         <a asp-action="MemberOverviewIndex" class="btn btn-primary mt-1">Cancel </a>
     </form>
     

@@ -7,6 +7,23 @@
 
 <h1 class="text-primary text-center">MemberOverview</h1>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
+        <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
+    </div>
+}
+
+<form asp-action="Search">
+    <div class="input-group mb-3 mt-1">
+        <input type="text" class="form-control" name="ssn" placeholder="Enter Social security number to search" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+        </div>
+    </div>
+</form>
+
 <table class="table table-bordered table-striped border-3 border-dark design">
     <thead>
         <tr>
@@ -35,6 +52,10 @@
                 @Html.DisplayFor(model=>model.Membership)
             </th>
 
+<<<<<<<<< Temporary merge branch 1
+
+=========
+>>>>>>>>> Temporary merge branch 2
             
         </tr>
     </thead>
@@ -47,15 +68,21 @@
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
                 <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
                 <a asp-action="Delete" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-trash fa-2x' style="color:blue"></i></a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Membership)
+
+                @Html.DisplayFor(modelItem => item.Membership)
+
+=========
+                <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
+                <a asp-action="Delete" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-trash fa-2x' style="color:blue"></i></a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Membership)
+>>>>>>>>> Temporary merge branch 2
             </td>
             
         </tr>
@@ -79,5 +106,8 @@
    class="btn btn-default text-primary @nextDisabled">
     Next
 </a>
-
+@if (ViewBag.Button != null)
+{
+    <a asp-action="Index" class="btn btn-primary">Go Back</a>
+}
 
