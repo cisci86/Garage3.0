@@ -95,19 +95,21 @@ namespace Garage_2._0.Controllers.MembersController
         }
 
         // GET: Members/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string Id )
+
         {
-            if (id == null)
+            if (Id == null)
             {
                 return NotFound();
             }
 
-            var member = await _context.Member.FindAsync(id);
-            if (member == null)
+            var member = await _context.Member.FindAsync(Id);// var member = await _context.Member.FindAsync(id);
+           var memberx = mapper.Map<MemberEditviewModel>(member);
+            if (memberx == null)
             {
                 return NotFound();
             }
-            return View(member);
+            return View(memberx);
         }
 
         // POST: Members/Edit/5
@@ -115,8 +117,9 @@ namespace Garage_2._0.Controllers.MembersController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("SocialSecurityNumber")] Member member)
+        public async Task<IActionResult> Edit(string id, MemberEditviewModel viewModel)
         {
+            var member = mapper.Map<Member>(viewModel);
             if (id != member.SocialSecurityNumber)
             {
                 return NotFound();
@@ -127,6 +130,9 @@ namespace Garage_2._0.Controllers.MembersController
                 try
                 {
                     _context.Update(member);
+                    _context.Entry(member).Property(m => m.SocialSecurityNumber).IsModified = false;
+                    _context.Entry(member).Property(m => m.MembershipId).IsModified = false;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -140,10 +146,11 @@ namespace Garage_2._0.Controllers.MembersController
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MemberOverviewIndex));
             }
             return View(member);
         }
+
 
         // GET: Members/Delete/5
         public async Task<IActionResult> Delete(string id)
