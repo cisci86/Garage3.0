@@ -7,7 +7,6 @@ namespace Garage_2._0.Models
         [Key]
         public int Id { get; set; }
         public bool Available { get; set; }
-       // public int VehicleId { get; set; }
         public Vehicle Vehicle { get; set; }
     }
 }
