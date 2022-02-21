@@ -10,11 +10,10 @@ namespace Garage_2._0.Extensions
             {
                 var provider = scope.ServiceProvider;
                 var _context = provider.GetRequiredService<GarageVehicleContext>();
-                var _config = provider.GetRequiredService<IConfiguration>();
 
                 try
                 {
-                    await SeedData.Start(_context, _config);
+                    await SeedData.Start(_context);
                 }
                 catch (Exception ex)
                 {

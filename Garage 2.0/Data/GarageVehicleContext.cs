@@ -41,10 +41,17 @@ public class GarageVehicleContext : DbContext
 
         modelBuilder.Entity<MemberHasMembership>()
                     .HasKey(e => new { e.MemberId, e.MembershipId });
+        
 
         modelBuilder.Entity<ParkingSpot>()
                     .HasData(
                     GetParkingSpots());
+        modelBuilder.Entity<Membership>()
+                    .HasData(
+                     GetMemberShips());
+        modelBuilder.Entity<VehicleType>()
+                    .HasData(
+                     GetVehicleTypes());
     }
     private static IEnumerable<ParkingSpot> GetParkingSpots()
     {
@@ -59,6 +66,69 @@ public class GarageVehicleContext : DbContext
             parkingSpots.Add(spot);
         }
         return parkingSpots;
+    }
+    private static IEnumerable<Membership> GetMemberShips()
+    {
+        var memberships = new List<Membership>();
+        Membership standard = new Membership
+        {
+            Type = "Standard",
+            BenefitBase = 1d,
+            BenefitHourly = 1d
+
+        };
+        memberships.Add(standard);
+
+        Membership pro = new Membership
+        {
+            Type = "Pro",
+            BenefitBase = 0.9d,
+            BenefitHourly = 0.9d
+        };
+        memberships.Add(pro);
+
+        return memberships;
+    }
+    private static IEnumerable<VehicleType> GetVehicleTypes()
+    {
+        var vehicleTypes = new List<VehicleType>();
+        var car = new VehicleType
+        {
+            Name = "Car",
+            Description = "The regular everyday vehicle most commonly used by people to travel both short and long distances",
+            Size = 1
+        };
+        vehicleTypes.Add(car);
+        var bus = new VehicleType
+        {
+            Name = "Bus",
+            Description = "Bigger type of transportation that takes over 6 people",
+            Size = 1
+        };
+        vehicleTypes.Add(bus);
+        var motorcycle = new VehicleType
+        {
+            Name = "Motorcycle",
+            Description = "A two wheeled vehicle that makes the owner respected in certain communities",
+            Size = 1
+        };
+        vehicleTypes.Add(motorcycle);
+        var zeppelin = new VehicleType
+        {
+            Name = "Zeppelin",
+            Description = "An airship in very limited edition",
+            Size = 1
+        };
+        vehicleTypes.Add(zeppelin);
+        var bananamobile = new VehicleType
+        {
+            Name = "Bananamobile",
+            Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
+            Size = 1
+        };
+        vehicleTypes.Add(bananamobile);
+
+        return vehicleTypes;
     }
     private string MakeSocialSecurityNumber()
     {

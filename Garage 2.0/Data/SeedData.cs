@@ -9,21 +9,21 @@ namespace Garage_2._0.Data
         private static Faker faker = null;
         private static Random gen = new Random();
         private static GarageVehicleContext? _context = null;
-        private static int capasity;
 
-        public static async Task Start(GarageVehicleContext context, IConfiguration config)
+        public static async Task Start(GarageVehicleContext context)
         {
 
             faker = new Faker("sv");
             _context = context;
-            var memberShip = await GetMembership();
             IEnumerable<Member> members = null;
             IEnumerable<MemberHasMembership> hasMemberships = null;
             IEnumerable<Vehicle> vehicles = null;
+            List<string> fakeSSNs = null;
 
-            List<string> fakeSSNs = MakeSocialSecurityNumber(15);
             if (!context.Member.Any())
             {
+                var memberShip = _context.Membership.ToList();
+                fakeSSNs = MakeSocialSecurityNumber(15);
                 members = GetMember(fakeSSNs, memberShip.Find(m => m.Type == "Standard")!);
                 await context.AddRangeAsync(members);
                 hasMemberships = GetMemberHasMembership(members, memberShip.First());
@@ -37,7 +37,7 @@ namespace Garage_2._0.Data
 
             if (!_context.Vehicle.Any())
             {
-                var vehicleTypes = await GetVehicleTypes();
+                var vehicleTypes = _context.VehicleType.ToList();
                 List<string> licensPlates = GenerateLicensPlate(10);
                 var parkingspots = _context.ParkinSpot.ToList();
 
@@ -46,31 +46,6 @@ namespace Garage_2._0.Data
             }
 
             await context.SaveChangesAsync();
-        }
-        private async static Task<List<Membership>> GetMembership()
-        {
-            if (!_context.Membership.Any())
-            {
-                var memberShip = new List<Membership>();
-                Membership standard = new Membership
-                {
-                    Type = "Standard",
-                    BenefitBase = 1d,
-                    BenefitHourly = 1d
-
-                };
-                memberShip.Add(standard);
-                Membership pro = new Membership
-                {
-                    Type = "Pro",
-                    BenefitBase = 0.9d,
-                    BenefitHourly = 0.9d
-                };
-                memberShip.Add(pro);
-                await _context.AddRangeAsync(memberShip);
-                return memberShip;
-            }
-            return _context.Membership.ToList();
         }
 
         private static IEnumerable<Member> GetMember(List<string> ssns, Membership membership)
@@ -99,53 +74,7 @@ namespace Garage_2._0.Data
             }
             return hasMemberships;
         }
-        private static async Task<List<VehicleType>> GetVehicleTypes()
-        {
-            if (!_context.VehicleType.Any())
-            {
-                var vehicleTypes = new List<VehicleType>();
-                var car = new VehicleType
-                {
-                    Name = "Car",
-                    Description = "The regular everyday vehicle most commonly used by people to travel both short and long distances",
-                    Size = 1
-                };
-                vehicleTypes.Add(car);
-                var bus = new VehicleType
-                {
-                    Name = "Bus",
-                    Description = "Bigger type of transportation that takes over 6 people",
-                    Size = 1
-                };
-                vehicleTypes.Add(bus);
-                var motorcycle = new VehicleType
-                {
-                    Name = "Motorcycle",
-                    Description = "A two wheeled vehicle that makes the owner respected in certain communities",
-                    Size = 1
-                };
-                vehicleTypes.Add(motorcycle);
-                var zeppelin = new VehicleType
-                {
-                    Name = "Zeppelin",
-                    Description = "An airship in very limited edition",
-                    Size = 1
-                };
-                vehicleTypes.Add(zeppelin);
-                var bananamobile = new VehicleType
-                {
-                    Name = "Bananamobile",
-                    Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
-                    Size = 1
-                };
-                vehicleTypes.Add(bananamobile);
-
-                await _context.AddRangeAsync(vehicleTypes);
-                return vehicleTypes;
-            }
-            return _context.VehicleType.ToList();
-
-        }
+        
 
         private static IEnumerable<Vehicle> GetVehicles(List<string> license, List<Member> members, List<VehicleType> vehicleTypes, List<ParkingSpot> parkingspots)
         {
@@ -167,7 +96,7 @@ namespace Garage_2._0.Data
                 {
                     var randomSpot = gen.Next(parkingspots.Count);
                     parkingspot = parkingspots[randomSpot-1];
-                } while (vehicles.Find(v => v.ParkingSpot == parkingspot.Id) != null);
+                } while (vehicles.Find(v => v.ParkingSpotId == parkingspot.Id) != null);
 
                 var wheels = gen.Next(0, 10);
                 var vehicle = new Vehicle
@@ -179,7 +108,7 @@ namespace Garage_2._0.Data
                     Model = model,
                     Arrival = arrival,
                     MemberId = member.SocialSecurityNumber,
-                    ParkingSpot = parkingspot.Id,
+                    ParkingSpot = parkingspot,
                     Color = color,
                     Wheels = wheels,
                     Owner = member
