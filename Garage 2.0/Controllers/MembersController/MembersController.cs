@@ -25,27 +25,30 @@ namespace Garage_2._0.Controllers.MembersController
         {
             return View(await _context.Member.ToListAsync());
         }
-        public async Task<IActionResult> MemberOverviewIndex(string sortOrder, int? pageNumber=1)
+        public async Task<IActionResult> MemberOverviewIndex(string sortOrder, int? pageNumber = 1)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
-            var viewmodel = _context.Member.Select(m => new MemberOverViewModel
+            var viewmodel = _context.Member.Include(m => m.Memberships)
+                .Select(m => new MemberOverViewModel
             {
                 SocialSecurityNumber = m.SocialSecurityNumber,
                 FirstName = m.Name.FirstName,
-                LastName = m.Name.LastName
+                LastName = m.Name.LastName,
+                Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
             }).AsEnumerable();
+
             
-                switch (sortOrder)
-                {
-                    case "FirstName_desc":
+            switch (sortOrder)
+            {
+                case "FirstName_desc":
                     viewmodel = viewmodel.OrderByDescending(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
 
-                    default:
+                default:
                     viewmodel = viewmodel.OrderBy(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
-                }
+            }
             int pageSize = 3;
             return View(await PaginatedList<MemberOverViewModel>.CreateAsync(viewmodel.AsEnumerable().ToList(), pageNumber ?? 1, pageSize));
 

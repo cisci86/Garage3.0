@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    [Migration("20220221094358_MovedMemberShipTypesSeedAndMemberShipTypeSeedToContext")]
-    partial class MovedMemberShipTypesSeedAndMemberShipTypeSeedToContext
+    [Migration("20220221134728_Merge2ElectricBoogaloo")]
+    partial class Merge2ElectricBoogaloo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,10 +28,6 @@ namespace Garage_2._0.Migrations
                     b.Property<string>("SocialSecurityNumber")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("MembershipId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("SocialSecurityNumber");
 
                     b.ToTable("Member");
@@ -39,19 +35,34 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
                 {
-                    b.Property<string>("MemberId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("MembershipId")
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("MemberId", "MembershipId");
+                    b.Property<DateTime?>("FinishedDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("MemberId")
-                        .IsUnique();
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MembershipId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("MembershipId");
 
                     b.ToTable("MemberHasMembership");
                 });
@@ -382,11 +393,21 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
                 {
-                    b.HasOne("Garage_2._0.Models.Member", null)
-                        .WithOne("Membership")
-                        .HasForeignKey("Garage_2._0.Models.MemberHasMembership", "MemberId")
+                    b.HasOne("Garage_2._0.Models.Member", "Member")
+                        .WithMany("Memberships")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
+                        .WithMany("HasMembers")
+                        .HasForeignKey("MembershipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Membership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
@@ -418,9 +439,14 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
                 {
-                    b.Navigation("Membership");
+                    b.Navigation("Memberships");
 
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
+                {
+                    b.Navigation("HasMembers");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>

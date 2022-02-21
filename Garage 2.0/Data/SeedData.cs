@@ -57,7 +57,7 @@ namespace Garage_2._0.Data
                 var fName = faker.Name.FirstName();
                 var lName = faker.Name.LastName();
 
-                var member = new Member(ssn, new Name(fName, lName), membership.Type);
+                var member = new Member(ssn, new Name(fName, lName));
                 memers.Add(member);
             }
             return memers;
@@ -66,11 +66,18 @@ namespace Garage_2._0.Data
         private static IEnumerable<MemberHasMembership> GetMemberHasMembership(IEnumerable<Member> members, Membership membership)
         {
             var hasMemberships = new List<MemberHasMembership>();
+            DateTime earliest = new DateTime(2020, 1, 1);
+            int range = (DateTime.Today - earliest).Days;
             foreach (var member in members)
             {
-                var hasMembership = new MemberHasMembership(member.SocialSecurityNumber, member.MembershipId);
+                earliest = new DateTime(2020, 1, 1);
+
+                var hasMembership = new MemberHasMembership(member.SocialSecurityNumber);// member.MemberHasMembershipId);
+                hasMembership.Member = member;
+                hasMembership.Membership = membership;
+                hasMembership.StartDate = earliest.AddDays(gen.Next(range));
                 hasMemberships.Add(hasMembership);
-                member.Membership = hasMembership;
+                member.Memberships.Add(hasMembership);
             }
             return hasMemberships;
         }

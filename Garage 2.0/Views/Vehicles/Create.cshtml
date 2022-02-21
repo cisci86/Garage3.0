@@ -1,4 +1,4 @@
-﻿@model Garage_2._0.Models.Vehicle
+﻿@model Garage_2._0.Models.VehicleCreateViewModel
 @inject Garage_2._0.Services.IVehicleTypeSelectListService service
 
 @{
@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="MemberId" class="control-label"></label>
-                <input asp-for="MemberId" class="form-control" value="587125-5467"/>
+                <input asp-for="MemberId" class="form-control"/>
                 <span asp-validation-for="MemberId" class="text-danger"></span>
             </div>
             <div class="form-group">

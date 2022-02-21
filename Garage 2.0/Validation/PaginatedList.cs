@@ -9,6 +9,7 @@ namespace Garage_2._0.Validation
         public string SocialSecurityNumber { get; } = "SSN";
         public string FirstName { get; } = "First name";
         public string LastName { get; } = "Last name";
+        public string Membership { get; } = "Membership";
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
