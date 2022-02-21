@@ -106,6 +106,9 @@ namespace Garage_2._0.Controllers.VehiclesController
         {
             // Check if a vehicle's owner is a registered member and over 18
            
+            if (MemberId.Length != 13)
+                return Json("Enter your Social Security Number in correct Format yyyymmdd-xxxx");
+            
             if (_context.Member.Find(MemberId) == null)
             {
                 return Json("You have to be a Registered member to Park a Vehicle");
