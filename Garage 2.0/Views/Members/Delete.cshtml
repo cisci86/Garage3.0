@@ -7,35 +7,28 @@
 <h1>Delete</h1>
 
 <h3>Are you sure you want to delete this Member?</h3>
-<div>
     <hr />
-   
-    <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Delete">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-                <input type="hidden" asp-for="SocialSecurityNumber" />
+   <form asp-action="">
+        <input type="hidden" asp-for="SocialSecurityNumber" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> 
+        <a asp-action="MemberOverviewIndex" class="btn btn-primary mt-1">Cancel </a>
+    </form>
+         <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name.FirstName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name.LastName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name.LastName)
+        </dd>
+        
+    </dl>
 
-                <div class="form-group">
-                <label asp-for="Name.FirstName" class="control-label"></label>
-                <input asp-for="Name.FirstName" class="form-control" />
-                <span asp-validation-for="Name.FirstName" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                <label asp-for="Name.LastName" class="control-label"></label>
-                <input asp-for="Name.LastName" class="form-control" />
-                <span asp-validation-for="Name.LastName" class="text-danger"></span>
-                </div>
-
-                    <input type="hidden" asp-for="SocialSecurityNumber" />
-                    <input type="submit" value="Delete" class="btn btn-danger" /> 
-                    <a asp-action="MemberOverviewIndex" class="btn btn-primary mt-1">Cancel </a>
-        </form>
-    </div>
-</div>
 
     
    
-</div>
