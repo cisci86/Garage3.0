@@ -9,7 +9,7 @@ namespace Garage_2._0.Models
     {
         [Required]
         [Key]
-
+        
         public string SocialSecurityNumber { get; set; }
         [Required]
         public Name Name { get; set; }

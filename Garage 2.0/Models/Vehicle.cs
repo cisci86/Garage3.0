@@ -30,6 +30,7 @@ namespace Garage_2._0.Models
         public DateTime Arrival { get; set; }
         public int ParkingSpot { get; set; }
         [Required]
+        [Remote(action: "VerifyMember", controller: "Vehicles")]
         public string MemberId { get; set; }
         public Member Owner { get; set; }
     }
