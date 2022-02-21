@@ -101,9 +101,25 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
             return Json(true);
         }
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult VerifyMember(string MemberId)
+        {
+            // Check if a vehicle's owner is a registered member and over 18
+            int OwnerAge = DateTime.Now.Year - (int.Parse(MemberId.AsSpan(0, 4)));
+            
+            if (MemberId.Length != 13)
+                return Json("Enter your Social Security Number in correct Format yyyymmdd-xxxx");
+            if (OwnerAge < 18)
+                return Json("You must be over 18 to Park a Vehicle");
+            if (_context.Member.Find(MemberId) == null)
+            {
+                return Json("You have to be a Registered member to Park a Vehicle");
+            }
+            return Json(true);
+        }
 
-        // GET: Vehicles/Edit/5
-        public async Task<IActionResult> Edit(string id)
+            // GET: Vehicles/Edit/5
+            public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
