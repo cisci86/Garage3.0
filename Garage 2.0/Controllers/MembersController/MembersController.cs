@@ -134,7 +134,8 @@ namespace Garage_2._0.Controllers.MembersController
                 {
                     _context.Update(member);
                     _context.Entry(member).Property(m => m.SocialSecurityNumber).IsModified = false;
-                    _context.Entry(member).Property(m => m.MembershipId).IsModified = false;
+                    //  _context.Entry(member).Property(m => m.MembershipId).IsModified = false;
+                    _context.Entry(member).Property(m => m.Memberships).IsModified = false;
 
                     await _context.SaveChangesAsync();
                 }
