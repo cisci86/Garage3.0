@@ -9,7 +9,11 @@ namespace Garage_2._0.Models
     public class Member
     {
         [Key]
+
+        
+
        // [DatabaseGenerated(DatabaseGeneratedOption.None)]
+
         public string SocialSecurityNumber { get; set; }
         [Required]
         public Name Name { get; set; }

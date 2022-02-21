@@ -31,14 +31,14 @@ namespace Garage_2._0.Controllers.MembersController
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
             var viewmodel = _context.Member.Include(m => m.Memberships)
                 .Select(m => new MemberOverViewModel
-            {
-                SocialSecurityNumber = m.SocialSecurityNumber,
-                FirstName = m.Name.FirstName,
-                LastName = m.Name.LastName,
-                Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
-            }).AsEnumerable();
+                {
+                    SocialSecurityNumber = m.SocialSecurityNumber,
+                    FirstName = m.Name.FirstName,
+                    LastName = m.Name.LastName,
+                    Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
+                }).AsEnumerable();
 
-            
+
             switch (sortOrder)
             {
                 case "FirstName_desc":
@@ -90,27 +90,38 @@ namespace Garage_2._0.Controllers.MembersController
             if (ModelState.IsValid)
             {
                 var member = mapper.Map<Member>(viewModel);
+                var memberHasMemberShip = new MemberHasMembership(member.SocialSecurityNumber)
+                {
+                    Member = member,
+                    Membership = _context.Membership.Find("Standard"),
+                    StartDate = DateTime.Now,
+
+                };
+                member.Memberships.Add(memberHasMemberShip);
+                //member.Memberships.Add(_context.MemberHasMembership.Find(_context.Membership.Find("Standard")));
                 _context.Add(member);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MemberOverviewIndex));
             }
             return View(viewModel);
         }
 
         // GET: Members/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string Id)
+
         {
-            if (id == null)
+            if (Id == null)
             {
                 return NotFound();
             }
 
-            var member = await _context.Member.FindAsync(id);
-            if (member == null)
+            var member = await _context.Member.FindAsync(Id);// var member = await _context.Member.FindAsync(id);
+            var memberx = mapper.Map<MemberEditviewModel>(member);
+            if (memberx == null)
             {
                 return NotFound();
             }
-            return View(member);
+            return View(memberx);
         }
 
         // POST: Members/Edit/5
@@ -118,8 +129,9 @@ namespace Garage_2._0.Controllers.MembersController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("SocialSecurityNumber")] Member member)
+        public async Task<IActionResult> Edit(string id, MemberEditviewModel viewModel)
         {
+            var member = mapper.Map<Member>(viewModel);
             if (id != member.SocialSecurityNumber)
             {
                 return NotFound();
@@ -130,6 +142,9 @@ namespace Garage_2._0.Controllers.MembersController
                 try
                 {
                     _context.Update(member);
+                    _context.Entry(member).Property(m => m.SocialSecurityNumber).IsModified = false;
+                    _context.Entry(member).Collection(m => m.Memberships).IsModified = false;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -143,10 +158,11 @@ namespace Garage_2._0.Controllers.MembersController
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MemberOverviewIndex));
             }
             return View(member);
         }
+
 
         // GET: Members/Delete/5
         public async Task<IActionResult> Delete(string id)
@@ -158,6 +174,7 @@ namespace Garage_2._0.Controllers.MembersController
 
             var member = await _context.Member
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
+
             if (member == null)
             {
                 return NotFound();
@@ -171,10 +188,19 @@ namespace Garage_2._0.Controllers.MembersController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var member = await _context.Member.FindAsync(id);
+            var member = await _context.Member
+                                .Include(m => m.Vehicles)
+                                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
+            foreach (var vehicle in member.Vehicles)
+            {
+                var p = await _context.ParkinSpot.FirstOrDefaultAsync(p => p.Vehicle == vehicle);
+                p.Available = true;
+                _context.Remove(vehicle);
+            }
+
             _context.Member.Remove(member);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MemberOverviewIndex));
         }
 
         private bool MemberExists(string id)
@@ -192,8 +218,23 @@ namespace Garage_2._0.Controllers.MembersController
             }
             return Json(true);
         }
+        public async Task<IActionResult> Search(string ssn)
+        {
+            if (ssn == null)
+            {
+                TempData["Error"] = "You need to enter a SSN before you search";
+                ViewBag.Button = "true";
+                return RedirectToAction(nameof(MemberOverviewIndex));
+            }
+            var model = _context.Member.Where(m => m.SocialSecurityNumber.Contains(ssn));
+            await model.ToListAsync();
+
+            if (!model.Any())
+            {
+                TempData["Error"] = "Sorry your search did not yield a result";
+            }
+            ViewBag.Button = "true";
+            return View(nameof(MemberOverviewIndex), model.AsEnumerable());
+        }
     }
-
-
-
 }
