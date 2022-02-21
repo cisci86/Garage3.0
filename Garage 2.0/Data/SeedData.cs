@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Garage_2._0.Extensions;
 using Garage_2._0.Models;
 
 namespace Garage_2._0.Data
@@ -8,68 +9,43 @@ namespace Garage_2._0.Data
         private static Faker faker = null;
         private static Random gen = new Random();
         private static GarageVehicleContext? _context = null;
-        private static IConfiguration _config = null!;
 
-        public static async Task Start(GarageVehicleContext context, IConfiguration config)
+        public static async Task Start(GarageVehicleContext context)
         {
 
             faker = new Faker("sv");
             _context = context;
-            _config = config;
-            var memberShip = await GetMembership();
             IEnumerable<Member> members = null;
             IEnumerable<MemberHasMembership> hasMemberships = null;
             IEnumerable<Vehicle> vehicles = null;
+            List<string> fakeSSNs = null;
 
-            List<string> fakeSSNs = MakeSocialSecurityNumber(15);
             if (!context.Member.Any())
             {
+                var memberShip = _context.Membership.ToList();
+                fakeSSNs = MakeSocialSecurityNumber(15);
                 members = GetMember(fakeSSNs, memberShip.Find(m => m.Type == "Standard")!);
                 await context.AddRangeAsync(members);
                 hasMemberships = GetMemberHasMembership(members, memberShip.First());
                 await context.AddRangeAsync(hasMemberships);
             }
-            else 
+            else
                 members = context.Member.ToList();
-            
-           
+
+
 
 
             if (!_context.Vehicle.Any())
             {
-                var vehicleTypes = await GetVehicleTypes();
+                var vehicleTypes = _context.VehicleType.ToList();
                 List<string> licensPlates = GenerateLicensPlate(10);
-                var parkingspots = GetParkingSpots(10);
+                var parkingspots = _context.ParkinSpot.ToList();
+
                 vehicles = GetVehicles(licensPlates, members.ToList(), vehicleTypes, parkingspots);
                 await context.AddRangeAsync(vehicles);
             }
 
             await context.SaveChangesAsync();
-        }
-        private async static Task<List<Membership>> GetMembership()
-        {
-            if (!_context.Membership.Any())
-            {
-                var memberShip = new List<Membership>();
-                Membership standard = new Membership
-                {
-                    Type = "Standard",
-                    BenefitBase = 1d,
-                    BenefitHourly = 1d
-
-                };
-                memberShip.Add(standard);
-                Membership pro = new Membership
-                {
-                    Type = "Pro",
-                    BenefitBase = 0.9d,
-                    BenefitHourly = 0.9d
-                };
-                memberShip.Add(pro);
-                await _context.AddRangeAsync(memberShip);
-                return memberShip;
-            }
-            return _context.Membership.ToList();
         }
 
         private static IEnumerable<Member> GetMember(List<string> ssns, Membership membership)
@@ -105,53 +81,9 @@ namespace Garage_2._0.Data
             }
             return hasMemberships;
         }
-        private static async Task<List<VehicleType>> GetVehicleTypes()
-        {
-            if (!_context.VehicleType.Any())
-            {
-                var vehicleTypes = new List<VehicleType>();
-                var car = new VehicleType
-                {
-                    Name = "Car",
-                    Description = "The regular everyday vehicle most commonly used by people to travel both short and long distances",
-                    Size = 1
-                };
-                vehicleTypes.Add(car);
-                var bus = new VehicleType
-                {
-                    Name = "Bus",
-                    Description = "Bigger type of transportation that takes over 6 people",
-                    Size = 1
-                };
-                vehicleTypes.Add(bus);
-                var motorcycle = new VehicleType
-                {
-                    Name = "Motorcycle",
-                    Description = "A two wheeled vehicle that makes the owner respected in certain communities",
-                    Size = 1
-                };
-                vehicleTypes.Add(motorcycle);
-                var zeppelin = new VehicleType
-                {
-                    Name = "Zeppelin",
-                    Description = "An airship in very limited edition",
-                    Size = 1
-                };
-                vehicleTypes.Add(zeppelin);
-                var bananamobile = new VehicleType
-                {
-                    Name = "Bananamobile",
-                    Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
-                    Size = 1
-                };
-                await _context.AddRangeAsync(vehicleTypes);
-                return vehicleTypes;
-            }
-            return _context.VehicleType.ToList();
+        
 
-        }
-
-        private static IEnumerable<Vehicle> GetVehicles(List<string> license, List<Member> members, List<VehicleType> vehicleTypes, List<int> parkingspots)
+        private static IEnumerable<Vehicle> GetVehicles(List<string> license, List<Member> members, List<VehicleType> vehicleTypes, List<ParkingSpot> parkingspots)
         {
             Faker faker2 = new Faker("en");
             var vehicles = new List<Vehicle>();
@@ -160,13 +92,19 @@ namespace Garage_2._0.Data
                 var make = faker.Vehicle.Manufacturer();
                 var model = faker.Vehicle.Model();
                 var licensePlate = license[i];
-                var arrival = faker.Date.Past(10, DateTime.Now);
+                var arrival = faker.Date.Between(DateTime.Now.AddDays(-30) , DateTime.Now);
                 var rand = gen.Next(0, members.Count());
                 var member = members[rand];
                 var rand2 = gen.Next(0, vehicleTypes.Count());
                 var vehicleType = vehicleTypes[rand2];
                 var color = faker2.Commerce.Color();
-                var parkingspot = parkingspots[i];
+                ParkingSpot parkingspot;
+                do
+                {
+                    var randomSpot = gen.Next(parkingspots.Count);
+                    parkingspot = parkingspots[randomSpot-1];
+                } while (vehicles.Find(v => v.ParkingSpotId == parkingspot.Id) != null);
+
                 var wheels = gen.Next(0, 10);
                 var vehicle = new Vehicle
                 {
@@ -183,6 +121,9 @@ namespace Garage_2._0.Data
                     Owner = member
                 };
                 vehicles.Add(vehicle);
+
+                parkingspot.Available = false;       
+                parkingspot.Vehicle = vehicle;
             }
             return vehicles;
         }
@@ -254,19 +195,6 @@ namespace Garage_2._0.Data
                 else i--;
             }
             return licens;
-        }
-        private static List<int> GetParkingSpots(int howMany)
-        {
-            List<int> parkingSpots = new List<int>();
-            for (int i = 0;i < howMany; i++)
-            {
-                var spot = (gen.Next(1, _config.GetValue<int>("GarageCapacity:Capacity")));
-                if (!parkingSpots.Contains(spot))
-                    parkingSpots.Add(spot);
-                else
-                    i--;
-            }
-            return parkingSpots;
         }
     }
 }

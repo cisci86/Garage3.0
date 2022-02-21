@@ -115,12 +115,9 @@
     {
         <h4>Occupied spots in the garage are: </h4>
 
-        @foreach (var item in ViewbagModel.spotsTaken as Vehicle[])
+        @foreach (var item in ViewbagModel.spotsTaken as ParkingSpot[])
         {
-            @if (item != null)
-            {
-                <p>Spot number: <strong>@item.ParkingSpot</strong> by License Plate: <strong>@item.License</strong> </p>
-            }
+             <p>Spot number: <strong>@item.Id</strong> by License Plate: <strong>@item.Vehicle.License</strong> </p> 
         }
     }
 
