@@ -143,7 +143,7 @@ namespace Garage_2._0.Controllers.MembersController
                 {
                     _context.Update(member);
                     _context.Entry(member).Property(m => m.SocialSecurityNumber).IsModified = false;
-                    _context.Entry(member).Property(m => m.MembershipId).IsModified = false;
+                    _context.Entry(member).Collection(m => m.Memberships).IsModified = false;
 
                     await _context.SaveChangesAsync();
                 }
@@ -174,11 +174,7 @@ namespace Garage_2._0.Controllers.MembersController
 
             var member = await _context.Member
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
-            foreach (var vehicle in member.Vehicles)
-            {
-                vehicle.ParkingSpot.Available = true;
-                _context.Remove(vehicle);
-            }
+            
             if (member == null)
             {
                 return NotFound();
@@ -192,10 +188,13 @@ namespace Garage_2._0.Controllers.MembersController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var member = await _context.Member.FindAsync(id);
+            var member = await _context.Member
+                                .Include(m => m.Vehicles)
+                                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
             foreach (var vehicle in member.Vehicles)
             {
-                vehicle.ParkingSpot.Available = true;
+                var p = await _context.ParkinSpot.FirstOrDefaultAsync(p => p.Vehicle == vehicle);
+                p.Available = true;
                 _context.Remove(vehicle);
             }
 

@@ -53,12 +53,12 @@
                 @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Membership)
+            </td>
+            <td>
 
                 <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
                 <a asp-action="Delete" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-trash fa-2x' style="color:blue"></i></a>
-
-                @Html.DisplayFor(modelItem => item.Membership)
-
             </td>
             
         </tr>
