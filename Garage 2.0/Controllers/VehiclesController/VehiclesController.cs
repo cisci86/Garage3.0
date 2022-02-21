@@ -138,7 +138,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 {
                     _context.Update(vehicle);
                     _context.Entry(vehicle).Property(v => v.Arrival).IsModified = false; //Makes sure that the Arrival time don't change
-                    _context.Entry(vehicle).Property(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
+                    _context.Entry(vehicle).Reference(v => v.ParkingSpot).IsModified = false; //Makes sure that the parking spot don't change
                     TempData["message"] = $"Your changes for {vehicle.License} has been applied";
                     await _context.SaveChangesAsync();
                 }
@@ -168,6 +168,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             var vehicle = await _context.Vehicle
                 .Include(v => v.Owner)
+                .Include(v => v.ParkingSpot)
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
             {

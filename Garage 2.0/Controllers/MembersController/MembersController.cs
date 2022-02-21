@@ -90,9 +90,18 @@ namespace Garage_2._0.Controllers.MembersController
             if (ModelState.IsValid)
             {
                 var member = mapper.Map<Member>(viewModel);
+                var memberHasMemberShip = new MemberHasMembership(member.SocialSecurityNumber)
+                {
+                    Member = member,
+                    Membership = _context.Membership.Find("Standard"),
+                    StartDate = DateTime.Now,
+
+                };
+                member.Memberships.Add(memberHasMemberShip);
+                //member.Memberships.Add(_context.MemberHasMembership.Find(_context.Membership.Find("Standard")));
                 _context.Add(member);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MemberOverviewIndex));
             }
             return View(viewModel);
         }
