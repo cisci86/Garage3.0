@@ -190,12 +190,25 @@ namespace Garage_2._0.Controllers.VehiclesController
             return _context.Vehicle.Any(e => e.License == id);
         }
 
+        private double BaseDiscountBonus(string type, int parkSpotsOccupied)
+        {
+            switch (type)
+            {
+                case "Pro":
+                    //The rule for Pro membership: 10% discount iff the vehicle occupies more than one spot
+                    return parkSpotsOccupied > 1 ? 0.9 : 1;
+                default:
+                    return 1;
+            }
+        }
+
         private double CalculatePrice(Vehicle vehicle)
         {
             // 1 Spot = baseprice + hourly * time
             // 2 Spot = baseprice * 1.3 + hourly * 1.4 * time
             // 3+ Spot = baseprice * 1.6 + hourly * 1.5 * time
-            const int parkSpotsOccupied = 1; //ToDo change to vehicle.ParkingSpot
+
+            const int parkSpotsOccupied = 1; //ToDo change to vehicle.ParkingSpot or whatever
 
             double basepriceMultiplier = 1.0d,
                 hourlyMultiplier = 1.0d;
@@ -213,50 +226,70 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             double totalPrice = 0;
 
+            /* General algorithm:
+                1. Get a list of all memberships the member had during the period.
+                2. The price for the first element is calculated by membershipEnded - vehicleArrival
+                3. The price for the last element is calculated by membershipStarted - datetimeNow
+                4. All elements inbetween are calculated iteratively by:
+                    a. The price from membershipEnded - membershipStarted
+                5. Add all prices and return total.
+            */
+            // 1. Get all memberships the member had during the time period
+            List<MemberHasMembership> hasMemberships = _context.MemberHasMembership.Include(m => m.Membership)
+                .Where(m => m.MemberId == vehicle.MemberId)
+                .Where(m => m.StartDate <= DateTime.Now)
+                .Where(m => m.FinishedDate == null ? true : m.FinishedDate >= vehicle.Arrival)
+                .ToList();
             //Check if membership expired during stay
-            /*if (vehicle.OwnerMembership != vehicle.Owner.Memberships.Last())
+            if (hasMemberships.Count > 1)
             {
-                *//* General algorithm:
-                    1. Get a list of all memberships the member had during the period.
-                    2. The price for the first element is calculated by membershipEnded - vehicleArrival
-                    3. The price for the last element is calculated by membershipStarted - datetimeNow
-                    4. All elements inbetween are calculated iteratively by:
-                        a. The price from membershipEnded - membershipStarted
-                    5. Add all prices and return total.
-                *//*
+                // 2. 
+                Membership firstMembership = _context.Membership.FirstOrDefault(m => m.Type == hasMemberships.First().MembershipId);
+                TimeSpan firstTotalTime = (TimeSpan)(hasMemberships.First().FinishedDate - vehicle.Arrival);
+                double firstHourlyDiscountBonus = Math.Max(1 - 4 * (1 - firstMembership.BenefitHourly), 1 - parkSpotsOccupied * (1 - firstMembership.BenefitHourly));
+                double firstBaseDiscountBonus = BaseDiscountBonus(firstMembership.Type, parkSpotsOccupied);
+                double firstTimeHours = firstTotalTime.Days * 24 + firstTotalTime.Hours + firstTotalTime.Minutes * 1.0 / 60.0;
 
-                //Get all memberships the member had during the time period
-                List<MemberHasMembership> hasMemberships = _context.MemberHasMembership.Include(m => m.Membership)
-                    .Where(m => m.MemberId == vehicle.MemberId)
-                    .Where(m => m.StartDate <= DateTime.Now)
-                    .Where(m => m.FinishedDate == null ? true : m.FinishedDate >= vehicle.Arrival)
-                    .ToList();
-                //vehicle.OwnerMembership is the membership at the time of arrival
+                totalPrice += Global.BaseRate * basepriceMultiplier * firstMembership.BenefitBase * firstBaseDiscountBonus 
+                    + Global.HourlyRate * hourlyMultiplier * firstHourlyDiscountBonus * firstTimeHours;
+                // 3.
+                Membership lastMembership = _context.Membership.FirstOrDefault(m => m.Type == hasMemberships.Last().MembershipId);
+                TimeSpan lastTotalTime = (DateTime.Now - hasMemberships.Last().StartDate);
+                double lastHourlyDiscountBonus = Math.Max(1 - 4 * (1 - lastMembership.BenefitHourly), 1 - parkSpotsOccupied * (1 - lastMembership.BenefitHourly));
+                double lastBaseDiscountBonus = BaseDiscountBonus(lastMembership.Type, parkSpotsOccupied);
+                double lastTimeHours = lastTotalTime.Days * 24 + lastTotalTime.Hours + lastTotalTime.Minutes * 1.0 / 60.0;
 
-                
+                totalPrice += Global.BaseRate * basepriceMultiplier * lastMembership.BenefitBase * lastBaseDiscountBonus
+                    + Global.HourlyRate * hourlyMultiplier * lastHourlyDiscountBonus * lastTimeHours;
+                // 4. 
+                Membership middleMembership;
+                TimeSpan middleTotalTime;
+                double middleHourlyDiscountBonus;
+                double middleBaseDiscountBonus;
+                double middleTimeHours;
+                for (int i = 1; i < hasMemberships.Count - 1; i++)
+                {
+                    middleMembership = _context.Membership.FirstOrDefault(m => m.Type == hasMemberships[i].MembershipId);
+                    middleTotalTime = (TimeSpan)(hasMemberships[i].FinishedDate - hasMemberships[i].StartDate);
+                    middleHourlyDiscountBonus = Math.Max(1 - 4 * (1 - middleMembership.BenefitHourly), 1 - parkSpotsOccupied * (1 - middleMembership.BenefitHourly));
+                    middleBaseDiscountBonus = BaseDiscountBonus(middleMembership.Type, parkSpotsOccupied);
+                    middleTimeHours = middleTotalTime.Days * 24 + middleTotalTime.Hours + middleTotalTime.Minutes * 1.0 / 60.0;
 
+                    totalPrice += Global.BaseRate * basepriceMultiplier * middleMembership.BenefitBase * middleBaseDiscountBonus
+                    + Global.HourlyRate * hourlyMultiplier * middleHourlyDiscountBonus * middleTimeHours;
+                }
             }
             else
             {
                 //No changes in the membership
-                Membership membership = _context.Membership.FirstOrDefault(m => m.Type == vehicle.OwnerMembership.MembershipId);
+                Membership membership = _context.Membership.FirstOrDefault(m => m.Type == hasMemberships.First().MembershipId);
                 TimeSpan totalTime = DateTime.Now.Subtract(vehicle.Arrival);
                 double hourlyDiscountBonus = Math.Max(1 - 4 * (1 - membership.BenefitHourly), 1 - parkSpotsOccupied * (1 - membership.BenefitHourly));
-                double baseDiscountBonus = 0;
-                switch (membership.Type)
-                {
-                    case "Pro":
-                        //The rule for Pro membership: 10% discount iff the vehicle occupies more than one spot
-                        baseDiscountBonus = parkSpotsOccupied > 1 ? 0.9 : 1;
-                        break;
-                    default:
-                        baseDiscountBonus = 1;
-                        break;
-                }
+                double baseDiscountBonus = BaseDiscountBonus(membership.Type, parkSpotsOccupied);
 
                 double timeHours = totalTime.Days * 24 + totalTime.Hours + totalTime.Minutes * 1.0 / 60;
                 totalPrice = Global.BaseRate * basepriceMultiplier * membership.BenefitBase * baseDiscountBonus + Global.HourlyRate * hourlyMultiplier * hourlyDiscountBonus * timeHours;
-            }*/
+            }
 
             return Math.Round(totalPrice, 2);
         }
@@ -284,10 +317,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
 
                 receipt.ParkingDuration = totalParkedTime;
-                double hourlyRate = Global.HourlyRate;
-                double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
-                cost = Math.Round(cost, 2);
-                receipt.Price = cost + "Sek";
+                receipt.Price = $"{CalculatePrice(vehicle)} kr"; //cost + "Sek";
             }
             else
                 return NotFound();
@@ -313,7 +343,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 await model.ToListAsync();
             }
 
-            else if(plate == null && type != null)
+            else if (plate == null && type != null)
             {
                 model = _context.Vehicle.Where(v => v.Type.Name.Contains(type));
                 await model.ToListAsync();
@@ -334,6 +364,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(nameof(Index), await model.ToListAsync());
         }
+        
         //this one is used on the Overview
         public async Task<IActionResult> Search(string plate, string type)
         {
@@ -352,7 +383,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                                                                      Type = v.Type,
                                                                      License = v.License,
                                                                      Make = v.Make,
-                                                                     TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                                                     TimeSpent = Global.TimeAsString(DateTime.Now.Subtract(v.Arrival))
                                                                  });
                 await model.ToListAsync();
             }
@@ -364,7 +395,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                                             Type = v.Type,
                                             License = v.License,
                                             Make = v.Make,
-                                            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                            TimeSpent = Global.TimeAsString(DateTime.Now.Subtract(v.Arrival))
                                         });
                 await model.ToListAsync();
             }
@@ -377,7 +408,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                                             Type = v.Type,
                                             License = v.License,
                                             Make = v.Make,
-                                            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                            TimeSpent = Global.TimeAsString(DateTime.Now.Subtract(v.Arrival))
                                         });
                 await model.ToListAsync();
             }
@@ -397,7 +428,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 Type = v.Type,
                 License = v.License,
                 Make = v.Make,
-                TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                TimeSpent = Global.TimeAsString(DateTime.Now.Subtract(v.Arrival))
             });
             TotalGarageCapacity_and_FreeSpace();
             AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
@@ -423,13 +454,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             Statistics statistics = new Statistics
             {
                 TotalWheelAmount = res.Sum(r => r.Wheels),
-                TotalCostsGenerated = res.Sum(v =>
-                {
-                    double hourlyRate = Global.HourlyRate;
-                    TimeSpan duration = DateTime.Now.Subtract(v.Arrival);
-                    double cost = (duration.Hours + (duration.Minutes * 1.0 / 60)) * hourlyRate;
-                    return Math.Round(cost, 2);
-                })
+                TotalCostsGenerated = _context.Vehicle.ToList().Sum(v => CalculatePrice(v))
             };
 
             //Initialise the statistics vehicle type counter
@@ -501,19 +526,13 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         public void CalculateParkingAmount(Vehicle vehicle)
         {
-
-            double hourlyRate = Global.HourlyRate;
-            TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
-            double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
-            cost = Math.Round(cost, 2);
             ViewbagModel.AmtTitle = "Amount";
-            ViewbagModel.amount = cost + "Sek";
-
+            ViewbagModel.amount = $"{CalculatePrice(vehicle)} kr";
         }
 
         public async Task<IActionResult> VehicleMemberView()
         {
-            var newList = await _context.Vehicle
+            var newList = await _context.Vehicle.Include(v => v.Owner.Memberships)
                 .Select(v => new VehicleMemberViewModel(v.License, v.Arrival, v.Owner, v.Type.Name))
                 .ToListAsync();
             return View(newList);
