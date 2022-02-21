@@ -28,7 +28,8 @@ namespace Garage_2._0.Models
         public int Wheels { get; set; }
         [ReadOnly(true)]
         public DateTime Arrival { get; set; }
-        public int ParkingSpot { get; set; }
+        public int ParkingSpotId { get; set; }
+        public ParkingSpot ParkingSpot { get; set; }
         [Required]
         [Remote(action: "VerifyMember", controller: "Vehicles")]
         public string MemberId { get; set; }

@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Vehicle>
+@inject Garage_2._0.Services.IVehicleTypeSelectListService service
+
 @using Garage_2._0.Models;
 <div class="row">
     <div class="col mb-1">
@@ -45,6 +47,11 @@
     <div class="input-group mb-3 mt-1">
         <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
         <div class="input-group-append">
+            <select class="form-select" name="type" asp-items="@await service.GetVehicleTypesAsync()">
+                <option selected="selected" value="">Please select</option>
+            </select>
+        </div>
+        <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
         </div>
     </div>
@@ -88,7 +95,7 @@
                     @Html.DisplayFor(modelItem => item.License)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Type.Name)
+                    @Html.DisplayFor(modelItem => item.VehicleTypeName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Color)
@@ -106,7 +113,7 @@
                     @Html.DisplayFor(modelItem => item.Arrival)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ParkingSpot)
+                    @Html.DisplayFor(modelItem => item.ParkingSpot.Id)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.License" class="btn btn-primary">Make changes</a>
@@ -117,23 +124,20 @@
         }
     </tbody>
 </table>
-@if (ViewBag.Button != null)
-{
-    <a asp-action="VehiclesOverview" class="btn btn-primary">Go Back</a>
-}
+
 @if (ViewBag.Button == null)
 {
     <h4 class="text-center">Garage Map</h4>
     <div class="row">
-        @foreach (var (item, i) in (ViewbagModel.spotsTaken as Vehicle[]).Select((value, i) => (value, i + 1)))
+        @foreach (var (item, i) in (ViewbagModel.spotsTaken as ParkingSpot[]).Select((value, i) => (value, i + 1)))
        {
-            @if (item != null)
+            @if (item.Available == false)
             {
                     <div class="card m-1" style="background-color:red; width: 7.5rem">
                         <div class="card-body">
                             <h5 class="card-title text-center">@i</h5>
                             <p class="card-text text-center">
-                                @item.License
+                                @item.Vehicle.License
                             </p>
                         </div>
                     </div>
