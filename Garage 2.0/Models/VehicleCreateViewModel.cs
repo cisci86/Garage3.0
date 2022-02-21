@@ -22,6 +22,7 @@ namespace Garage_2._0.Models
         [Range(0, int.MaxValue, ErrorMessage = "Please enter a value of 0 or bigger")]
         public int Wheels { get; set; }
         [Required]
+        [Remote(action: "VerifyMember", controller: "Vehicles")]
         public string MemberId { get; set; }
     }
 }

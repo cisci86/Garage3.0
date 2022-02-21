@@ -15,9 +15,10 @@
     </div>
 }
 
-<form asp-action="Search">
+<form asp-action="MemberOverviewIndex">
     <div class="input-group mb-3 mt-1">
-        <input type="text" class="form-control" name="ssn" placeholder="Enter Social security number to search" />
+        <input type="text"  class="form-control" name="ssn" placeholder="Enter Social security number to search" @ViewBag.CurrentFilter="ssn"/>
+        
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
         </div>
@@ -32,7 +33,7 @@
             </th>
             
            <th>
-                <a asp-action="MemberOverviewIndex" asp-route-sortOrder="@ViewBag.NameSortParm">@Html.DisplayFor(model=>model.FirstName) </a>
+                <a asp-action="MemberOverviewIndex" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter">@Html.DisplayFor(model=>model.FirstName) </a>
                 @{
                     if(ViewBag.NameSortParm=="")
                     {
@@ -52,11 +53,6 @@
                 @Html.DisplayFor(model=>model.Membership)
             </th>
 
-<<<<<<<<< Temporary merge branch 1
-
-=========
->>>>>>>>> Temporary merge branch 2
-            
         </tr>
     </thead>
     <tbody>
@@ -68,23 +64,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
-                <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
-                <a asp-action="Delete" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-trash fa-2x' style="color:blue"></i></a>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Membership)
-
-                @Html.DisplayFor(modelItem => item.Membership)
-
-=========
-                <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
+            </td>
+            <td>    
+            <a asp-action="Edit" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-edit fa-2x' style="color:blue"></i></a> &nbsp;
                 <a asp-action="Delete" asp-route-id="@item.SocialSecurityNumber"><i class='fa fa-trash fa-2x' style="color:blue"></i></a>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Membership)
->>>>>>>>> Temporary merge branch 2
-            </td>
-            
+                        
         </tr>
 }
     </tbody>
@@ -96,18 +86,20 @@
 
 <a asp-action="MemberOverviewIndex"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-currentFilter="@ViewBag.CurrentFilte"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    class="btn btn-default text-primary @prevDisabled">
     Previous
 </a>
 <a asp-action="MemberOverviewIndex"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-currentFilter="@ViewBag.CurrentFilte"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    class="btn btn-default text-primary @nextDisabled">
     Next
 </a>
-@if (ViewBag.Button != null)
+@*@if (ViewBag.Button != null)
 {
     <a asp-action="Index" class="btn btn-primary">Go Back</a>
-}
+}*@
 
