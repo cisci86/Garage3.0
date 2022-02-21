@@ -22,7 +22,7 @@ namespace Garage_2._0.Models
         {
             License = license;
             Owner = $"{owner.Name.FirstName} {owner.Name.LastName}";
-            Membership = owner.MembershipId;
+            Membership = "Test";//owner.MemberHasMembershipId;
             VehicleType = vehicleType;
             TimeSpent = DateTime.Now.Subtract(currentTime);
         }

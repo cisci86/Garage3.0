@@ -5,6 +5,6 @@ namespace Garage_2._0
     {
         public static int Garagecapacity;
         public static double HourlyRate;
-
+        public static double BaseRate;
     }
 }

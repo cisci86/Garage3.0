@@ -55,7 +55,7 @@ namespace Garage_2._0.Data
                 var fName = faker.Name.FirstName();
                 var lName = faker.Name.LastName();
 
-                var member = new Member(ssn, new Name(fName, lName), membership.Type);
+                var member = new Member(ssn, new Name(fName, lName));
                 memers.Add(member);
             }
             return memers;
@@ -66,9 +66,9 @@ namespace Garage_2._0.Data
             var hasMemberships = new List<MemberHasMembership>();
             foreach (var member in members)
             {
-                var hasMembership = new MemberHasMembership(member.SocialSecurityNumber, member.MembershipId);
+                var hasMembership = new MemberHasMembership("Test");// member.MemberHasMembershipId);
                 hasMemberships.Add(hasMembership);
-                member.Membership = hasMembership;
+                member.Memberships.Add(hasMembership);
             }
             return hasMemberships;
         }

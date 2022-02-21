@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Garage_2._0.Migrations
 {
-    public partial class init : Migration
+    public partial class MondayMorning : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,8 +15,7 @@ namespace Garage_2._0.Migrations
                 {
                     SocialSecurityNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MembershipId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,18 +52,28 @@ namespace Garage_2._0.Migrations
                 name: "MemberHasMembership",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     MemberId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MembershipId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FinishedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MemberHasMembership", x => new { x.MemberId, x.MembershipId });
+                    table.PrimaryKey("PK_MemberHasMembership", x => x.Id);
                     table.ForeignKey(
                         name: "FK_MemberHasMembership_Member_MemberId",
                         column: x => x.MemberId,
                         principalTable: "Member",
                         principalColumn: "SocialSecurityNumber",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MemberHasMembership_Membership_MembershipId",
+                        column: x => x.MembershipId,
+                        principalTable: "Membership",
+                        principalColumn: "Type",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -102,8 +111,12 @@ namespace Garage_2._0.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MemberHasMembership_MemberId",
                 table: "MemberHasMembership",
-                column: "MemberId",
-                unique: true);
+                column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MemberHasMembership_MembershipId",
+                table: "MemberHasMembership",
+                column: "MembershipId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicle_MemberId",
@@ -122,10 +135,10 @@ namespace Garage_2._0.Migrations
                 name: "MemberHasMembership");
 
             migrationBuilder.DropTable(
-                name: "Membership");
+                name: "Vehicle");
 
             migrationBuilder.DropTable(
-                name: "Vehicle");
+                name: "Membership");
 
             migrationBuilder.DropTable(
                 name: "Member");

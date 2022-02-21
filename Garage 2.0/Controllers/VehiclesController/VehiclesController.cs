@@ -12,11 +12,12 @@ namespace Garage_2._0.Controllers.VehiclesController
     {
         private readonly GarageVehicleContext _context;
         Vehicle[] parkingSpots;
-        public VehiclesController(GarageVehicleContext context,IConfiguration config)
+        public VehiclesController(GarageVehicleContext context, IConfiguration config)
         {
             _context = context;
             Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
             Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
+            Global.BaseRate = config.GetValue<double>("Price:BaseRate");
 
             SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
         }
@@ -45,7 +46,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 return NotFound();
             }
-            
+
             CalculateParkingAmount(vehicle);
             return View(vehicle);
         }
@@ -192,6 +193,76 @@ namespace Garage_2._0.Controllers.VehiclesController
             return _context.Vehicle.Any(e => e.License == id);
         }
 
+        private double CalculatePrice(Vehicle vehicle)
+        {
+            // 1 Spot = baseprice + hourly * time
+            // 2 Spot = baseprice * 1.3 + hourly * 1.4 * time
+            // 3+ Spot = baseprice * 1.6 + hourly * 1.5 * time
+            const int parkSpotsOccupied = 1; //ToDo change to vehicle.ParkingSpot
+
+            double basepriceMultiplier = 1.0d,
+                hourlyMultiplier = 1.0d;
+
+            if (parkSpotsOccupied == 2)
+            {
+                basepriceMultiplier = 1.3d;
+                hourlyMultiplier = 1.4d;
+            }
+            else if (parkSpotsOccupied > 2)
+            {
+                basepriceMultiplier = 1.6d;
+                hourlyMultiplier = 1.5d;
+            }
+
+            double totalPrice = 0;
+
+            //Check if membership expired during stay
+            /*if (vehicle.OwnerMembership != vehicle.Owner.Memberships.Last())
+            {
+                *//* General algorithm:
+                    1. Get a list of all memberships the member had during the period.
+                    2. The price for the first element is calculated by membershipEnded - vehicleArrival
+                    3. The price for the last element is calculated by membershipStarted - datetimeNow
+                    4. All elements inbetween are calculated iteratively by:
+                        a. The price from membershipEnded - membershipStarted
+                    5. Add all prices and return total.
+                *//*
+
+                //Get all memberships the member had during the time period
+                List<MemberHasMembership> hasMemberships = _context.MemberHasMembership.Include(m => m.Membership)
+                    .Where(m => m.MemberId == vehicle.MemberId)
+                    .Where(m => m.StartDate <= DateTime.Now)
+                    .Where(m => m.FinishedDate == null ? true : m.FinishedDate >= vehicle.Arrival)
+                    .ToList();
+                //vehicle.OwnerMembership is the membership at the time of arrival
+
+                
+
+            }
+            else
+            {
+                //No changes in the membership
+                Membership membership = _context.Membership.FirstOrDefault(m => m.Type == vehicle.OwnerMembership.MembershipId);
+                TimeSpan totalTime = DateTime.Now.Subtract(vehicle.Arrival);
+                double hourlyDiscountBonus = Math.Max(1 - 4 * (1 - membership.BenefitHourly), 1 - parkSpotsOccupied * (1 - membership.BenefitHourly));
+                double baseDiscountBonus = 0;
+                switch (membership.Type)
+                {
+                    case "Pro":
+                        //The rule for Pro membership: 10% discount iff the vehicle occupies more than one spot
+                        baseDiscountBonus = parkSpotsOccupied > 1 ? 0.9 : 1;
+                        break;
+                    default:
+                        baseDiscountBonus = 1;
+                        break;
+                }
+
+                double timeHours = totalTime.Days * 24 + totalTime.Hours + totalTime.Minutes * 1.0 / 60;
+                totalPrice = Global.BaseRate * basepriceMultiplier * membership.BenefitBase * baseDiscountBonus + Global.HourlyRate * hourlyMultiplier * hourlyDiscountBonus * timeHours;
+            }*/
+
+            return Math.Round(totalPrice, 2);
+        }
         //Calculate Total Parked Time + View Model for the Receipt
         public async Task<IActionResult> ReceiptView(string id)
         {
@@ -294,7 +365,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             int recordCount = _context.Vehicle.Count();
             int Total_Garage_Capacity = Global.Garagecapacity;
             ViewbagModel.garageStatus = $"Total parking spots: {Total_Garage_Capacity}";
-            ViewbagModel.freeSpots=$"Free Space :{Total_Garage_Capacity - recordCount}";
+            ViewbagModel.freeSpots = $"Free Space :{Total_Garage_Capacity - recordCount}";
         }
 
         public async Task<IActionResult> Statistics()
@@ -383,7 +454,7 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         public void CalculateParkingAmount(Vehicle vehicle)
         {
-            
+
             double hourlyRate = Global.HourlyRate;
             TimeSpan totalParkedTime = DateTime.Now.Subtract(vehicle.Arrival);
             double cost = (totalParkedTime.Hours * hourlyRate) + (totalParkedTime.Minutes * hourlyRate / 60.0);
@@ -393,13 +464,12 @@ namespace Garage_2._0.Controllers.VehiclesController
 
         }
 
-         public async Task<IActionResult> VehicleMemberView()
+        public async Task<IActionResult> VehicleMemberView()
         {
             var newList = await _context.Vehicle
-                .Select(v => new VehicleMemberViewModel (v.License, v.Arrival, v.Owner, v.Type.Name) )
+                .Select(v => new VehicleMemberViewModel(v.License, v.Arrival, v.Owner, v.Type.Name))
                 .ToListAsync();
             return View(newList);
         }
     }
 }
-    
