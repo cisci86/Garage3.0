@@ -1,4 +1,5 @@
 ﻿#nullable disable
+using AutoMapper;
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +9,15 @@ namespace Garage_2._0.Controllers.VehiclesController
     public class VehiclesController : Controller
     {
         private readonly GarageVehicleContext _context;
-        public VehiclesController(GarageVehicleContext context, IConfiguration config)
+        private readonly IMapper mapper;
+
+        public VehiclesController(GarageVehicleContext context, IConfiguration config, IMapper mapper)
         {
             _context = context;
             Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
             Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
             Global.BaseRate = config.GetValue<double>("Price:BaseRate");
+            this.mapper = mapper;
         }
 
 
@@ -61,19 +65,20 @@ namespace Garage_2._0.Controllers.VehiclesController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Vehicle vehicle)
+        public async Task<IActionResult> Create(VehicleCreateViewModel vehicleCreate)
         {
 
             //Check if license already exists in the database. If it exists, don't add the Vehicle.
-            if (_context.Vehicle.Find(vehicle.License) != null)
+            if (_context.Vehicle.Find(vehicleCreate.License) != null)
             {
                 return BadRequest();
             }
 
-
             if (ModelState.IsValid)
             {
+                var vehicle = mapper.Map<Vehicle>(vehicleCreate);
                 vehicle.License = vehicle.License.ToUpper();
+                vehicle.Type = _context.VehicleType.Find(vehicle.VehicleTypeName);
                 vehicle.Arrival = DateTime.Now;
                 vehicle.ParkingSpot = await _context.ParkinSpot.FirstOrDefaultAsync(p => p.Available);
                 vehicle.ParkingSpot.Vehicle = vehicle;
@@ -83,7 +88,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot.Id}!";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
-            return View(vehicle);
+            return View(vehicleCreate);
         }
 
         [AcceptVerbs("GET", "POST")]
@@ -208,7 +213,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             // 2 Spot = baseprice * 1.3 + hourly * 1.4 * time
             // 3+ Spot = baseprice * 1.6 + hourly * 1.5 * time
 
-            const int parkSpotsOccupied = 1; //ToDo change to vehicle.ParkingSpot or whatever
+            int parkSpotsOccupied = _context.VehicleType.Find(vehicle.VehicleTypeName).Size;
 
             double basepriceMultiplier = 1.0d,
                 hourlyMultiplier = 1.0d;
@@ -288,7 +293,8 @@ namespace Garage_2._0.Controllers.VehiclesController
                 double baseDiscountBonus = BaseDiscountBonus(membership.Type, parkSpotsOccupied);
 
                 double timeHours = totalTime.Days * 24 + totalTime.Hours + totalTime.Minutes * 1.0 / 60;
-                totalPrice = Global.BaseRate * basepriceMultiplier * membership.BenefitBase * baseDiscountBonus + Global.HourlyRate * hourlyMultiplier * hourlyDiscountBonus * timeHours;
+                totalPrice = Global.BaseRate * basepriceMultiplier * membership.BenefitBase * baseDiscountBonus 
+                    + Global.HourlyRate * hourlyMultiplier * hourlyDiscountBonus * timeHours;
             }
 
             return Math.Round(totalPrice, 2);
@@ -300,6 +306,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             Vehicle vehicle = await _context.Vehicle
                                 .Include(v => v.Owner)
                                 .Include(v => v.ParkingSpot)
+                                .Include(v => v.Type)
                                 .FirstOrDefaultAsync(v => v.License == id);
 
             Receipt receipt = new Receipt();

@@ -28,7 +28,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("SocialSecurityNumber");
 
-                    b.ToTable("Member", (string)null);
+                    b.ToTable("Member");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
@@ -62,7 +62,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("MembershipId");
 
-                    b.ToTable("MemberHasMembership", (string)null);
+                    b.ToTable("MemberHasMembership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
@@ -78,7 +78,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Type");
 
-                    b.ToTable("Membership", (string)null);
+                    b.ToTable("Membership");
 
                     b.HasData(
                         new
@@ -108,7 +108,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ParkinSpot", (string)null);
+                    b.ToTable("ParkinSpot");
 
                     b.HasData(
                         new
@@ -308,7 +308,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("VehicleTypeName");
 
-                    b.ToTable("Vehicle", (string)null);
+                    b.ToTable("Vehicle");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.VehicleType", b =>
@@ -325,7 +325,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("VehicleType", (string)null);
+                    b.ToTable("VehicleType");
 
                     b.HasData(
                         new
@@ -362,7 +362,7 @@ namespace Garage_2._0.Migrations
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
                 {
-                    b.OwnsOne("Garage_2._0.Models.Member.Name#Garage_2._0.Models.Name", "Name", b1 =>
+                    b.OwnsOne("Garage_2._0.Models.Name", "Name", b1 =>
                         {
                             b1.Property<string>("MemberSocialSecurityNumber")
                                 .HasColumnType("nvarchar(450)");
@@ -379,7 +379,7 @@ namespace Garage_2._0.Migrations
 
                             b1.HasKey("MemberSocialSecurityNumber");
 
-                            b1.ToTable("Member", (string)null);
+                            b1.ToTable("Member");
 
                             b1.WithOwner()
                                 .HasForeignKey("MemberSocialSecurityNumber");
