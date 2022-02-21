@@ -59,13 +59,13 @@
 <a asp-action="MemberOverviewIndex"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
-   class="btn btn-default @prevDisabled">
+   class="btn btn-default text-primary @prevDisabled">
     Previous
 </a>
 <a asp-action="MemberOverviewIndex"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
-   class="btn btn-default @nextDisabled">
+   class="btn btn-default text-primary @nextDisabled">
     Next
 </a>
 

@@ -2,9 +2,6 @@
 using Garage_2._0.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Web;
-using System.Linq;
 
 namespace Garage_2._0.Controllers.VehiclesController
 {
@@ -33,7 +30,6 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(await _context.Vehicle.ToListAsync());
         }
 
-        // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -167,6 +163,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
 
             var vehicle = await _context.Vehicle
+                .Include(v => v.Owner)
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
             {
@@ -267,11 +264,16 @@ namespace Garage_2._0.Controllers.VehiclesController
         public async Task<IActionResult> ReceiptView(string id)
         {
             //regNo should come from check-out so
-            Vehicle vehicle = await _context.Vehicle.FindAsync(id);
+            Vehicle vehicle = await _context.Vehicle
+                                .Include(v => v.Owner)
+                                .FirstOrDefaultAsync(v => v.License == id);
+
             Receipt receipt = new Receipt();
             if (vehicle != null)
             {
-                receipt.Type = vehicle.Type;
+                receipt.MemberName = vehicle.Owner.Name.FirstName + vehicle.Owner.Name.LastName;
+                receipt.MemberId = vehicle.MemberId;
+                receipt.VehicleTypeName = vehicle.VehicleTypeName;
                 receipt.License = vehicle.License;
                 receipt.ParkingSpot = vehicle.ParkingSpot;
                 receipt.Arrival = vehicle.Arrival;
@@ -296,16 +298,33 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(nameof(ReceiptView), receipt);
         }
         //This one is used on the detailed view
-        public async Task<IActionResult> SearchDetailed(string plate)
+        public async Task<IActionResult> SearchDetailed(string plate, string type)
         {
-            if (plate == null)
+            if (plate == null && type == null)
             {
-                TempData["Error"] = "You need to enter a License plate before you search";
+                TempData["Error"] = "You need to enter a License plate or select Type before you search";
                 return RedirectToAction(nameof(Index));
             }
-            var model = _context.Vehicle.Where(v => v.License.Contains(plate));
+            IQueryable<Vehicle> model = null!;
 
-            await model.ToListAsync();
+            if (plate != null && type == null)
+            {
+                model = _context.Vehicle.Where(v => v.License.Contains(plate));
+                await model.ToListAsync();
+            }
+
+            else if(plate == null && type != null)
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name.Contains(type));
+                await model.ToListAsync();
+            }
+
+            else
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name.Contains(type))
+                                         .Where(v => v.License.Contains(plate));
+                await model.ToListAsync();
+            }
 
             if (!model.Any())
             {
@@ -316,24 +335,52 @@ namespace Garage_2._0.Controllers.VehiclesController
             return View(nameof(Index), await model.ToListAsync());
         }
         //this one is used on the Overview
-        public async Task<IActionResult> Search(string plate)
+        public async Task<IActionResult> Search(string plate, string type)
         {
-            if (plate == null)
+            if (plate == null && type == null)
             {
-                TempData["Error"] = "You need to enter a License plate before you search";
+                TempData["Error"] = "You need to enter a License plate or select Type before you search";
                 ViewBag.Button = "true";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
-
-            var model = _context.Vehicle.Where(v => v.License.Contains(plate))
-                                                             .Select(v => new VehicleViewModel
-                                                             {
-                                                                 Type = v.Type,
-                                                                 License = v.License,
-                                                                 Make = v.Make,
-                                                                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
-                                                             });
-            await model.ToListAsync();
+            IQueryable<VehicleViewModel> model = null!;
+            if (plate != null && type == null)
+            {
+                model = _context.Vehicle.Where(v => v.License.Contains(plate))
+                                                                 .Select(v => new VehicleViewModel
+                                                                 {
+                                                                     Type = v.Type,
+                                                                     License = v.License,
+                                                                     Make = v.Make,
+                                                                     TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                                                 });
+                await model.ToListAsync();
+            }
+            else if (plate == null && type != null)
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name == type)
+                                        .Select(v => new VehicleViewModel
+                                        {
+                                            Type = v.Type,
+                                            License = v.License,
+                                            Make = v.Make,
+                                            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                        });
+                await model.ToListAsync();
+            }
+            else
+            {
+                model = _context.Vehicle.Where(v => v.Type.Name == type)
+                                        .Where(v => v.License.Contains(plate))
+                                        .Select(v => new VehicleViewModel
+                                        {
+                                            Type = v.Type,
+                                            License = v.License,
+                                            Make = v.Make,
+                                            TimeSpent = DateTime.Now.Subtract(v.Arrival)
+                                        });
+                await model.ToListAsync();
+            }
 
             if (!model.Any())
             {

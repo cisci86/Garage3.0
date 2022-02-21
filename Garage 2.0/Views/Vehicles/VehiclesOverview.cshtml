@@ -1,5 +1,5 @@
-@*@using Garage_2._0.Interfaces*@
 @model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+@inject Garage_2._0.Services.IVehicleTypeSelectListService service
 @using Garage_2._0.Models
 <div class="row">
     <div class="col mb-1">
@@ -44,6 +44,11 @@
 <form asp-action="Search">
     <div class="input-group mb-3 mt-1">
         <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
+        <div class="input-group-append">
+            <select class="form-select" name="type" asp-items="@await service.GetVehicleTypesAsync()">
+                <option selected="selected" value="">Please select</option>
+            </select>
+        </div>
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
         </div>

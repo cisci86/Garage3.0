@@ -54,7 +54,7 @@ namespace Garage_2._0.Validation
             int date = int.Parse(dateOfBirth.AsSpan(6, 2));
 
             if (year < 1900 || year > DateTime.Now.Year)
-                return (false, $"Enter a correct year (1850 - {DateTime.Now.Year})");
+                return (false, $"Enter a correct year (1900 - {DateTime.Now.Year})");
 
             if (month < 1 || month > 12)
                 return (false, ("Enter a correct month"));
