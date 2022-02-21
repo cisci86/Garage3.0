@@ -8,14 +8,11 @@ namespace Garage_2._0.Controllers.VehiclesController
     public class VehiclesController : Controller
     {
         private readonly GarageVehicleContext _context;
-        Vehicle[] parkingSpots;
         public VehiclesController(GarageVehicleContext context, IConfiguration config)
         {
             _context = context;
             Global.Garagecapacity = config.GetValue<int>("GarageCapacity:Capacity");
             Global.HourlyRate = config.GetValue<double>("Price:HourlyRate");
-
-            SetParkingSpots(); //Sets the list with a capacity to the garage capacity.
         }
 
 
@@ -23,9 +20,8 @@ namespace Garage_2._0.Controllers.VehiclesController
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-            AddExistingDataToGarage();
             TotalGarageCapacity_and_FreeSpace();
-            ViewbagModel.spotsTaken = parkingSpots;
+            ViewbagModel.spotsTaken = _context.ParkinSpot.Include(p => p.Vehicle).ToArray();
             return View(await _context.Vehicle.ToListAsync());
         }
 
@@ -78,10 +74,12 @@ namespace Garage_2._0.Controllers.VehiclesController
             {
                 vehicle.License = vehicle.License.ToUpper();
                 vehicle.Arrival = DateTime.Now;
-                vehicle.ParkingSpot = FindFirstEmptySpot();
+                vehicle.ParkingSpot = await _context.ParkinSpot.FirstOrDefaultAsync(p => p.Available);
+                vehicle.ParkingSpot.Vehicle = vehicle;
+                vehicle.ParkingSpot.Available = false;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot}!";
+                TempData["message"] = $"{vehicle.License} has been successfully parked in spot {vehicle.ParkingSpot.Id}!";
                 return RedirectToAction(nameof(VehiclesOverview));
             }
             return View(vehicle);
@@ -177,7 +175,9 @@ namespace Garage_2._0.Controllers.VehiclesController
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = _context.Vehicle.Include(v => v.ParkingSpot).FirstOrDefault(v => v.License == id);
+            vehicle.ParkingSpot.Available = true;
+            vehicle.ParkingSpot.Vehicle = null;
             _context.Vehicle.Remove(vehicle);
             await _context.SaveChangesAsync();
             TempData["message"] = $"{vehicle.License} has been checked out!";
@@ -195,6 +195,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             //regNo should come from check-out so
             Vehicle vehicle = await _context.Vehicle
                                 .Include(v => v.Owner)
+                                .Include(v => v.ParkingSpot)
                                 .FirstOrDefaultAsync(v => v.License == id);
 
             Receipt receipt = new Receipt();
@@ -220,7 +221,7 @@ namespace Garage_2._0.Controllers.VehiclesController
             }
             else
                 return NotFound();
-
+            vehicle.ParkingSpot.Available = true;
             _context.Vehicle.Remove(vehicle);
             _context.SaveChanges();
             TempData["message"] = $"{vehicle.License} has been checked out";
@@ -329,8 +330,8 @@ namespace Garage_2._0.Controllers.VehiclesController
                 TimeSpent = DateTime.Now.Subtract(v.Arrival)
             });
             TotalGarageCapacity_and_FreeSpace();
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
-            ViewbagModel.spotsTaken = parkingSpots;
+            //AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
+            ViewbagModel.spotsTaken = _context.ParkinSpot.Include(p => p.Vehicle).Where(p => !p.Available).ToArray();
             CheckIfGarageIsEmpty();
             return View(await simpleViewList.ToListAsync());
         }
@@ -375,59 +376,19 @@ namespace Garage_2._0.Controllers.VehiclesController
 
             return View(statistics);
         }
-        //Set the parking spots Array to the capacity of the garage.
-        private void SetParkingSpots()
-        {
-            int spotCount = Global.Garagecapacity;
-            parkingSpots = new Vehicle[spotCount];
-        }
+        
         private bool CheckIfGarageIsFull()
         {
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
-            bool isFull = true;
-            for (int i = 0; i < parkingSpots.Length; i++)
-            {
-                if (parkingSpots[i] == null)
-                    isFull = false;
-            }
-            return isFull;
+            return !_context.ParkinSpot.Any(p => p.Available);
+    
         }
         private void CheckIfGarageIsEmpty()
         {
-            bool isEmpty = true;
-            for (int i = 0; i < parkingSpots.Length; i++)
-            {
-                if (parkingSpots[i] != null)
-                    isEmpty = false;
-            }
-            ViewbagModel.areEmpty = isEmpty;
+            
+            ViewbagModel.areEmpty = !_context.ParkinSpot.Any(p => !p.Available);
 
         }
-        //Checks for the first empty spot in the array and gets that index. Then adds the vehicle to the array.
-        private int FindFirstEmptySpot()
-        {
-            AddExistingDataToGarage(); //Populates the Array with the existing vehicles on the right indexes.
-            int emptySpot = -1;
-            for (int i = 0; i < parkingSpots.Length; i++)
-            {
-                if (parkingSpots[i] == null)
-                {
-                    emptySpot = i;
-                    break;
-                }
-            }
-            return emptySpot + 1;
-        }
-        //Goes through the database and gets the parking spot and adds it to the correct place in the array.
-        private void AddExistingDataToGarage()
-        {
-            foreach (var item in _context.Vehicle)
-            {
-                int garageSpot = item.ParkingSpot - 1;
-                parkingSpots[garageSpot] = item;
-            }
-        }
-
+                
         public void CalculateParkingAmount(Vehicle vehicle)
         {
 

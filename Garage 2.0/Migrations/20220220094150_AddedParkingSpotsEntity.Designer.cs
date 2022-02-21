@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage_2._0.Migrations
 {
     [DbContext(typeof(GarageVehicleContext))]
-    partial class GarageVehicleContextModelSnapshot : ModelSnapshot
+    [Migration("20220220094150_AddedParkingSpotsEntity")]
+    partial class AddedParkingSpotsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +34,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("SocialSecurityNumber");
 
-                    b.ToTable("Member", (string)null);
+                    b.ToTable("Member");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
@@ -51,7 +53,7 @@ namespace Garage_2._0.Migrations
                     b.HasIndex("MemberId")
                         .IsUnique();
 
-                    b.ToTable("MemberHasMembership", (string)null);
+                    b.ToTable("MemberHasMembership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
@@ -67,21 +69,7 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Type");
 
-                    b.ToTable("Membership", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Type = "Standard",
-                            BenefitBase = 1.0,
-                            BenefitHourly = 1.0
-                        },
-                        new
-                        {
-                            Type = "Pro",
-                            BenefitBase = 0.90000000000000002,
-                            BenefitHourly = 0.90000000000000002
-                        });
+                    b.ToTable("Membership");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>
@@ -95,9 +83,14 @@ namespace Garage_2._0.Migrations
                     b.Property<bool>("Available")
                         .HasColumnType("bit");
 
+                    b.Property<string>("VehicleLicense")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("ParkinSpot", (string)null);
+                    b.HasIndex("VehicleLicense");
+
+                    b.ToTable("ParkinSpot");
 
                     b.HasData(
                         new
@@ -278,7 +271,7 @@ namespace Garage_2._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("ParkingSpotId")
+                    b.Property<int>("ParkingSpot")
                         .HasColumnType("int");
 
                     b.Property<string>("VehicleTypeName")
@@ -292,12 +285,9 @@ namespace Garage_2._0.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.HasIndex("ParkingSpotId")
-                        .IsUnique();
-
                     b.HasIndex("VehicleTypeName");
 
-                    b.ToTable("Vehicle", (string)null);
+                    b.ToTable("Vehicle");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.VehicleType", b =>
@@ -314,44 +304,12 @@ namespace Garage_2._0.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("VehicleType", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Name = "Car",
-                            Description = "The regular everyday vehicle most commonly used by people to travel both short and long distances",
-                            Size = 1
-                        },
-                        new
-                        {
-                            Name = "Bus",
-                            Description = "Bigger type of transportation that takes over 6 people",
-                            Size = 1
-                        },
-                        new
-                        {
-                            Name = "Motorcycle",
-                            Description = "A two wheeled vehicle that makes the owner respected in certain communities",
-                            Size = 1
-                        },
-                        new
-                        {
-                            Name = "Zeppelin",
-                            Description = "An airship in very limited edition",
-                            Size = 1
-                        },
-                        new
-                        {
-                            Name = "Bananamobile",
-                            Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
-                            Size = 1
-                        });
+                    b.ToTable("VehicleType");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
                 {
-                    b.OwnsOne("Garage_2._0.Models.Member.Name#Garage_2._0.Models.Name", "Name", b1 =>
+                    b.OwnsOne("Garage_2._0.Models.Name", "Name", b1 =>
                         {
                             b1.Property<string>("MemberSocialSecurityNumber")
                                 .HasColumnType("nvarchar(450)");
@@ -368,7 +326,7 @@ namespace Garage_2._0.Migrations
 
                             b1.HasKey("MemberSocialSecurityNumber");
 
-                            b1.ToTable("Member", (string)null);
+                            b1.ToTable("Member");
 
                             b1.WithOwner()
                                 .HasForeignKey("MemberSocialSecurityNumber");
@@ -387,17 +345,20 @@ namespace Garage_2._0.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>
+                {
+                    b.HasOne("Garage_2._0.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleLicense");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
                 {
                     b.HasOne("Garage_2._0.Models.Member", "Owner")
                         .WithMany("Vehicles")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Garage_2._0.Models.ParkingSpot", "ParkingSpot")
-                        .WithOne("Vehicle")
-                        .HasForeignKey("Garage_2._0.Models.Vehicle", "ParkingSpotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -409,8 +370,6 @@ namespace Garage_2._0.Migrations
 
                     b.Navigation("Owner");
 
-                    b.Navigation("ParkingSpot");
-
                     b.Navigation("Type");
                 });
 
@@ -419,11 +378,6 @@ namespace Garage_2._0.Migrations
                     b.Navigation("Membership");
 
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>
-                {
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.VehicleType", b =>
