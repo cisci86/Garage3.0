@@ -32,6 +32,7 @@ namespace Garage_2._0.Controllers.VehiclesController
                 return NotFound();
             }
             var vehicle = await _context.Vehicle
+                .Include(v => v.Type)
                 .FirstOrDefaultAsync(m => m.License == id);
             if (vehicle == null)
             {
