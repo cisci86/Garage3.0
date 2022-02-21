@@ -162,6 +162,11 @@ namespace Garage_2._0.Controllers.MembersController
 
             var member = await _context.Member
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
+            foreach (var vehicle in member.Vehicles)
+            {
+                vehicle.ParkingSpot.Available = true;
+                _context.Remove(vehicle);
+            }
             if (member == null)
             {
                 return NotFound();
@@ -176,6 +181,12 @@ namespace Garage_2._0.Controllers.MembersController
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var member = await _context.Member.FindAsync(id);
+            foreach (var vehicle in member.Vehicles)
+            {
+                vehicle.ParkingSpot.Available = true;
+                _context.Remove(vehicle);
+            }
+
             _context.Member.Remove(member);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(MemberOverviewIndex));
