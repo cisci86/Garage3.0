@@ -7,12 +7,57 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Member</h4>
+    <h4>@Model.Name.FirstName @Model.Name.LastName</h4>
     <hr />
     <dl class="row">
+        <dt>
+            @Html.DisplayNameFor(model => model.SocialSecurityNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SocialSecurityNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Memberships)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Memberships.Last().MembershipId)
+        </dd>
+        <dt>
+            <h3>@Html.DisplayNameFor(model => model.Vehicles)</h3> <hr />
+        </dt>
+
+        @foreach (var vehicle in Model.Vehicles)
+        {
+            <div class="card" style="width:20rem;">
+                <div class="card-header">
+            <dt>
+                        @Html.DisplayNameFor(modelItem => vehicle.VehicleTypeName)
+            </dt>
+    </div>
+    <div class="card-body">
+        <dd>
+                        @Html.DisplayFor(modelItem => vehicle.VehicleTypeName)
+        </dd>
+    </div>
+    <div class="card-header">
+        <dt>
+                        @Html.DisplayNameFor(modelItem => vehicle.License)
+        </dt>
+    </div>
+    <div class="card-body">
+        <dd>
+                        @Html.DisplayFor(modelItem => vehicle.License)
+        </dd>
+    </div>
+                </div>
+
+
+
+
+        }
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.SocialSecurityNumber">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.SocialSecurityNumber" class="btn btn-primary">Edit</a> 
+    <a asp-action="MemberOverviewIndex" class="btn btn-primary">Back to List</a>
 </div>

@@ -10,6 +10,7 @@ namespace Garage_2._0.Validation
         public string FirstName { get; } = "First name";
         public string LastName { get; } = "Last name";
         public string Membership { get; } = "Membership";
+        public string VehicleCount { get; } = "Vehicles registered";
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {

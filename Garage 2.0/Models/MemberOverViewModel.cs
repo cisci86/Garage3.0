@@ -7,5 +7,6 @@ namespace Garage_2._0.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Membership { get; set; }
+        public int VehicleCount { get; set; }
     }
 }
