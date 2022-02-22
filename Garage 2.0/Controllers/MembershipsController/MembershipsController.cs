@@ -54,7 +54,7 @@ namespace Garage_2._0.Controllers.MembershipsController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Type,BenefitHourly,BenefitBase")] Membership membership)
+        public async Task<IActionResult> Create(Membership membership)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace Garage_2._0.Controllers.MembershipsController
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Type,BenefitHourly,BenefitBase")] Membership membership)
+        public async Task<IActionResult> Edit(string id, Membership membership)
         {
             if (id != membership.Type)
             {

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage_2._0.Services;
 using Garage_2._0.Extensions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVehicleTypeSelectListService, VehicleTypeSelectListService>();
 
 builder.Services.AddAutoMapper(typeof(GarageMappings));
+
+//https://gist.github.com/AndreasAmMueller/38c1a8d76ecd4450b4f75a479f3293c1 To make localisation work, because Microsoft hates non US citizens...
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBinderProviders.Insert(0, new CustomFloatingPointModelBinderProvider());
+});
 
 var app = builder.Build();
 
