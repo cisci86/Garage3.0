@@ -25,10 +25,17 @@ namespace Garage_2._0.Controllers.MembersController
         {
             return View(await _context.Member.ToListAsync());
         }
-        public async Task<IActionResult> MemberOverviewIndex(string sortOrder, int? pageNumber = 1)
+        public async Task<IActionResult> MemberOverviewIndex(string sortOrder, string currentFilter, string ssn,int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
+            
+            
+                       
+            
+
+            ViewBag.CurrentFilter = ssn;
+
             var viewmodel = _context.Member.Include(m => m.Memberships)
                 .Select(m => new MemberOverViewModel
                 {
@@ -38,7 +45,23 @@ namespace Garage_2._0.Controllers.MembersController
                     Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
                 }).AsEnumerable();
 
-
+            if (ssn != null)
+            {
+                pageNumber = 1;
+                ViewBag.Button = "true";
+            }
+            else
+            {
+                TempData["Error"] = "You need to enter a SSN before you search";
+                ViewBag.Button = "";
+                ssn = currentFilter;
+                
+            }
+            if (!String.IsNullOrEmpty(ssn))
+            {
+                viewmodel = viewmodel.Where(s => s.SocialSecurityNumber.Contains(ssn));
+            }
+           
             switch (sortOrder)
             {
                 case "FirstName_desc":
@@ -49,7 +72,9 @@ namespace Garage_2._0.Controllers.MembersController
                     viewmodel = viewmodel.OrderBy(x => x.FirstName.Substring(0, 2), StringComparer.Ordinal).ToList();
                     break;
             }
-            int pageSize = 3;
+            int pageSize = 5;
+
+           
             return View(await PaginatedList<MemberOverViewModel>.CreateAsync(viewmodel.AsEnumerable().ToList(), pageNumber ?? 1, pageSize));
 
         }
@@ -218,23 +243,6 @@ namespace Garage_2._0.Controllers.MembersController
             }
             return Json(true);
         }
-        public async Task<IActionResult> Search(string ssn)
-        {
-            if (ssn == null)
-            {
-                TempData["Error"] = "You need to enter a SSN before you search";
-                ViewBag.Button = "true";
-                return RedirectToAction(nameof(MemberOverviewIndex));
-            }
-            var model = _context.Member.Where(m => m.SocialSecurityNumber.Contains(ssn));
-            await model.ToListAsync();
-
-            if (!model.Any())
-            {
-                TempData["Error"] = "Sorry your search did not yield a result";
-            }
-            ViewBag.Button = "true";
-            return View(nameof(MemberOverviewIndex), model.AsEnumerable());
-        }
+ 
     }
 }
