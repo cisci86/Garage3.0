@@ -52,7 +52,6 @@ namespace Garage_2._0.Controllers.MembersController
             }
             else
             {
-                TempData["Error"] = "You need to enter a SSN before you search";
                 ViewBag.Button = "";
                 ssn = currentFilter;
                 
