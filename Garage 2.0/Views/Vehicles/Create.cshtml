@@ -13,11 +13,19 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="VehicleTypeName" class="control-label"></label>
-                @* ToDo Make the dropdown show from VehicleType table instead *@
-                <select asp-for="VehicleTypeName" class="form-select" asp-items="@await service.GetVehicleTypesAsync()"></select>  
-                <span asp-validation-for="VehicleTypeName" class="text-danger"></span>
+            <div class="row align-items-end">
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="VehicleTypeName" class="control-label"></label>
+                        <select asp-for="VehicleTypeName" class="form-select" asp-items="@await service.GetVehicleTypesAsync()"></select>
+                        <span asp-validation-for="VehicleTypeName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <a asp-action="VehicleTypeCreate" class="btn btn-primary">Add new Vehicle type</a>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="License" class="control-label"></label>
@@ -27,7 +35,7 @@
             <div class="form-group">
                 <label asp-for="MemberId" class="control-label"></label>
 
-                <input asp-for="MemberId" class="form-control"/>
+                <input asp-for="MemberId" class="form-control" />
 
                 <span asp-validation-for="MemberId" class="text-danger"></span>
             </div>
