@@ -7,13 +7,13 @@
 
 <h1 class="text-primary text-center">MemberOverview</h1>
 
-@if (TempData["Error"] != null)
+@*@if (TempData["Error"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
         <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
     </div>
-}
+}*@
 
 <form asp-action="MemberOverviewIndex">
     <div class="input-group mb-3 mt-1">
