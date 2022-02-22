@@ -29,14 +29,10 @@ namespace Garage_2._0.Controllers.MembersController
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "FirstName_desc" : "";
-            if (ssn != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                ssn = currentFilter;
-            }
+            
+            
+                       
+            
 
             ViewBag.CurrentFilter = ssn;
 
@@ -49,6 +45,18 @@ namespace Garage_2._0.Controllers.MembersController
                     Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
                 }).AsEnumerable();
 
+            if (ssn != null)
+            {
+                pageNumber = 1;
+                ViewBag.Button = "true";
+            }
+            else
+            {
+                TempData["Error"] = "You need to enter a SSN before you search";
+                ViewBag.Button = "";
+                ssn = currentFilter;
+                
+            }
             if (!String.IsNullOrEmpty(ssn))
             {
                 viewmodel = viewmodel.Where(s => s.SocialSecurityNumber.Contains(ssn));
