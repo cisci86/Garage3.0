@@ -523,5 +523,27 @@ namespace Garage_2._0.Controllers.VehiclesController
                 .ToListAsync();
             return View(newList);
         }
+        public async Task<IActionResult> VehicleTypeCreate()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VehicleTypeCreate(VehicleType type)
+        {
+            if (_context.VehicleType.Find(type.Name) != null)
+            {
+                return BadRequest();
+            }
+            if (ModelState.IsValid)
+            {
+                _context.VehicleType.Add(type);
+                await _context.SaveChangesAsync();
+                TempData["message"] = $"{type.Name} has been successfully to Vehicle types!";
+                return RedirectToAction(nameof(Create));
+            }
+            return View(type);
+        
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace Garage_2._0.Models
     {
         [Display(Name="First Name")]
         public string FirstName { get; set; }
+        [Name]
         [Display(Name="Last Name")]
         public string LastName { get; set; }
 

@@ -7,6 +7,7 @@ namespace Garage_2._0.Models
     public class VehicleCreateViewModel
     {
         [Required]
+        [Display(Name="Vehicle type")]
         public string VehicleTypeName { get; set; }
         [Required]
         [Remote(action: "VerifyLicense", controller: "Vehicles")]

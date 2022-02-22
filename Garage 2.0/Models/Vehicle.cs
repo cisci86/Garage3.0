@@ -10,6 +10,7 @@ namespace Garage_2._0.Models
     public class Vehicle
     {
         [Required]
+        [Display(Name="Vehicle type")]
         public string VehicleTypeName { get; set; }
         public VehicleType Type { get; set; }
         [Required]
@@ -31,7 +32,6 @@ namespace Garage_2._0.Models
         public int ParkingSpotId { get; set; }
         public ParkingSpot ParkingSpot { get; set; }
         [Required]
-        [Remote(action: "VerifyMember", controller: "Vehicles")]
         public string MemberId { get; set; }
         public Member Owner { get; set; }
     }
