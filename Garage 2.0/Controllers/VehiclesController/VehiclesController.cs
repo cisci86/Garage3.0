@@ -106,11 +106,11 @@ namespace Garage_2._0.Controllers.VehiclesController
         public IActionResult VerifyMember(string MemberId)
         {
             // Check if a vehicle's owner is a registered member and over 18
-            int OwnerAge = DateTime.Now.Year - (int.Parse(MemberId.AsSpan(0, 4)));
+            //int OwnerAge = DateTime.Now.Year - (int.Parse(MemberId.AsSpan(0, 4)));
             
             if (MemberId.Length != 13)
                 return Json("Enter your Social Security Number in correct Format yyyymmdd-xxxx");
-            if (OwnerAge < 18)
+            if (DateTime.Now.Year - (int.Parse(MemberId.AsSpan(0, 4)))<18)
                 return Json("You must be over 18 to Park a Vehicle");
             if (_context.Member.Find(MemberId) == null)
             {
