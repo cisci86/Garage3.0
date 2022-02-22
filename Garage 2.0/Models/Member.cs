@@ -9,17 +9,11 @@ namespace Garage_2._0.Models
     public class Member
     {
         [Key]
-
-        
-
-       // [DatabaseGenerated(DatabaseGeneratedOption.None)]
-
         public string SocialSecurityNumber { get; set; }
         [Required]
         public Name Name { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
         [Required]
-       // public string MemberHasMembershipId { get; internal set; }
         public ICollection<MemberHasMembership> Memberships { get; set; } = new List<MemberHasMembership>();
 
         private Member()
