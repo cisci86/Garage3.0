@@ -36,13 +36,14 @@ namespace Garage_2._0.Controllers.MembersController
 
             ViewBag.CurrentFilter = ssn;
 
-            var viewmodel = _context.Member.Include(m => m.Memberships)
+            var viewmodel = _context.Member.Include(m => m.Memberships).Include(m => m.Vehicles)
                 .Select(m => new MemberOverViewModel
                 {
                     SocialSecurityNumber = m.SocialSecurityNumber,
                     FirstName = m.Name.FirstName,
                     LastName = m.Name.LastName,
-                    Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId
+                    Membership = m.Memberships.OrderBy(m => m.Id).Last().MembershipId,
+                    VehicleCount = m.Vehicles.Count
                 }).AsEnumerable();
 
             if (ssn != null)
@@ -85,7 +86,7 @@ namespace Garage_2._0.Controllers.MembersController
                 return NotFound();
             }
 
-            var member = await _context.Member
+            var member = await _context.Member.Include(m => m.Vehicles).Include(m => m.Memberships)
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
             if (member == null)
             {
@@ -242,6 +243,7 @@ namespace Garage_2._0.Controllers.MembersController
             }
             return Json(true);
         }
+
  
     }
 }
