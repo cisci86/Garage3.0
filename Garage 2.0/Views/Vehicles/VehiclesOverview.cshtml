@@ -1,5 +1,6 @@
-﻿@using Garage_2._0.Interfaces
 @model IEnumerable<Garage_2._0.Models.VehicleViewModel>
+@inject Garage_2._0.Services.IVehicleTypeSelectListService service
+@using Garage_2._0.Models
 <div class="row">
     <div class="col mb-1">
 
@@ -19,10 +20,10 @@
         </div>
     </div>
     <div class="col text-end">
-        @if (ViewBag.garageStatus != null)
+        @if(ViewbagModel.garageStatus!=null)
         {
-        //Html.Raw() can lead to XSS if user controlled.
-            <p class="d-inline-block p-2 rounded primary btn-primary mt-2 text-start">@Html.Raw(ViewBag.garageStatus)</p>
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@ViewbagModel.garageStatus</p>
+            <p class="d-inline-block p-2 rounded primary btn-primary mt-2">@ViewbagModel.freeSpots</p>
         }
     </div>
 </div>
@@ -43,6 +44,11 @@
 <form asp-action="Search">
     <div class="input-group mb-3 mt-1">
         <input type="text" class="form-control" name="plate" placeholder="Enter License plate to search" />
+        <div class="input-group-append">
+            <select class="form-select" name="type" asp-items="@await service.GetVehicleTypesAsync()">
+                <option selected="selected" value="">Please select</option>
+            </select>
+        </div>
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
         </div>
@@ -72,7 +78,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Type)
+                    @Html.DisplayFor(modelItem => item.Type.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.License)
@@ -101,7 +107,7 @@
 @*If you not are doing a search an summary of taken spots will show*@
 @if (ViewBag.Button == null)
 {
-    @if (ViewBag.areEmpty)
+    @if (ViewbagModel.areEmpty)
     {
         <h4>The Garage is empty</h4>
     }
@@ -109,12 +115,9 @@
     {
         <h4>Occupied spots in the garage are: </h4>
 
-        @foreach (var item in ViewData["spotsTaken"] as Vehicle[])
+        @foreach (var item in ViewbagModel.spotsTaken as ParkingSpot[])
         {
-            @if (item != null)
-            {
-                <p>Spot number: <strong>@item.ParkingSpot</strong> by License Plate: <strong>@item.License</strong> </p>
-            }
+             <p>Spot number: <strong>@item.Id</strong> by License Plate: <strong>@item.Vehicle.License</strong> </p> 
         }
     }
 

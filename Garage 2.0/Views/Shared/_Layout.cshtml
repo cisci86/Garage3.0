@@ -30,6 +30,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Statistics">Statistics</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="VehicleMemberView">Vehicle & Member</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Memberships" asp-action="Index">Memberships 🎖</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" id="nav-dropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" asp-area="">Member</a>
+                            <ul class="dropdown-menu" aria-labelledby="nav-dropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Members" asp-action="Create">Register</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Members" asp-action="MemberOverviewIndex">View All Members</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>

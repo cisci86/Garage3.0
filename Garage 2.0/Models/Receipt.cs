@@ -1,14 +1,16 @@
-﻿using Garage_2._0.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 #nullable disable
 namespace Garage_2._0.Models
 {
     public class Receipt
     {
-        public VehicleTypes Type { get; set; }
+        
+        public string MemberName { get; set; }
+        public string MemberId { get; set; }
+        public string VehicleTypeName { get; set; }
         [Key]
         public string License { get; set; }
-        public int ParkingSpot { get; set; }
+        public ParkingSpot ParkingSpot { get; set; }
         public DateTime Arrival { get; set; }
         public DateTime CheckOut { get; set; }
 

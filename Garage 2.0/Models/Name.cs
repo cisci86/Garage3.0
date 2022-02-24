@@ -1,8 +1,14 @@
-﻿namespace Garage_2._0.Models
+﻿using Garage_2._0.Validation;
+using System.ComponentModel.DataAnnotations;
+
+namespace Garage_2._0.Models
 {
     public class Name
     {
+        [Display(Name="First Name")]
         public string FirstName { get; set; }
+        [Name]
+        [Display(Name="Last Name")]
         public string LastName { get; set; }
 
         private Name()

@@ -1,4 +1,4 @@
-﻿@model Garage_2._0.Models.Member
+﻿@model Garage_2._0.Models.MemberCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -16,6 +16,16 @@
                 <label asp-for="SocialSecurityNumber" class="control-label"></label>
                 <input asp-for="SocialSecurityNumber" class="form-control" />
                 <span asp-validation-for="SocialSecurityNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NameFirstName" class="control-label"></label>
+                <input asp-for="NameFirstName" class="form-control" />
+                <span asp-validation-for="NameFirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NameLastName" class="control-label"></label>
+                <input asp-for="NameLastName" class="form-control" />
+                <span asp-validation-for="NameLastName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

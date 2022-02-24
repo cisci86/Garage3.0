@@ -1,4 +1,5 @@
 ﻿@model Garage_2._0.Models.Vehicle
+@using Garage_2._0.Models
 
 @{
     ViewData["Title"] = "Details";
@@ -11,10 +12,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
+            @Html.DisplayNameFor(model => model.VehicleTypeName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Type)
+            @Html.DisplayFor(model => model.VehicleTypeName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Color)
@@ -41,10 +42,10 @@
             @Html.DisplayFor(model => model.Wheels)
         </dd>
          <dt class="col-sm-2">
-            @Html.ViewBag.AmtTitle
+            @ViewbagModel.AmtTitle
         </dt>
         <dd class="col-sm-10">
-            @Html.ViewBag.amount
+            @ViewbagModel.amount
         </dd>
     </dl>
 </div>

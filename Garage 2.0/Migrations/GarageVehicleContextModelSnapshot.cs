@@ -31,6 +31,238 @@ namespace Garage_2._0.Migrations
                     b.ToTable("Member");
                 });
 
+            modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FinishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MembershipId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("MembershipId");
+
+                    b.ToTable("MemberHasMembership");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
+                {
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("BenefitBase")
+                        .HasColumnType("float");
+
+                    b.Property<double>("BenefitHourly")
+                        .HasColumnType("float");
+
+                    b.HasKey("Type");
+
+                    b.ToTable("Membership");
+
+                    b.HasData(
+                        new
+                        {
+                            Type = "Standard",
+                            BenefitBase = 1.0,
+                            BenefitHourly = 1.0
+                        },
+                        new
+                        {
+                            Type = "Pro",
+                            BenefitBase = 0.90000000000000002,
+                            BenefitHourly = 0.90000000000000002
+                        });
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ParkinSpot");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Available = true
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Available = true
+                        });
+                });
+
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
                 {
                     b.Property<string>("License")
@@ -48,73 +280,83 @@ namespace Garage_2._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("ParkingSpot")
+                    b.Property<int>("ParkingSpotId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("VehicleTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Wheels")
                         .HasColumnType("int");
 
-                    b.Property<string>("ownerSocialSecurityNumber")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("License");
 
-                    b.HasIndex("ownerSocialSecurityNumber");
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("ParkingSpotId")
+                        .IsUnique();
+
+                    b.HasIndex("VehicleTypeName");
 
                     b.ToTable("Vehicle");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.VehicleType", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("VehicleType");
 
                     b.HasData(
                         new
                         {
-                            License = "EGW123",
-                            Arrival = new DateTime(2022, 2, 1, 12, 9, 28, 0, DateTimeKind.Unspecified),
-                            Color = "Red",
-                            Make = "Volvo",
-                            Model = "Xc60",
-                            ParkingSpot = 1,
-                            Type = 0,
-                            Wheels = 4
+                            Name = "Car",
+                            Description = "The regular everyday vehicle most commonly used by people to travel both short and long distances",
+                            Size = 1
                         },
                         new
                         {
-                            License = "ASL123",
-                            Arrival = new DateTime(2022, 2, 1, 13, 9, 28, 0, DateTimeKind.Unspecified),
-                            Color = "White",
-                            Make = "Volvo",
-                            Model = "Xc60",
-                            ParkingSpot = 2,
-                            Type = 0,
-                            Wheels = 4
+                            Name = "Bus",
+                            Description = "Bigger type of transportation that takes over 6 people",
+                            Size = 1
                         },
                         new
                         {
-                            License = "MXP123",
-                            Arrival = new DateTime(2022, 2, 1, 14, 9, 28, 0, DateTimeKind.Unspecified),
-                            Color = "Yellow",
-                            Make = "Volvo",
-                            Model = "Xc60",
-                            ParkingSpot = 3,
-                            Type = 2,
-                            Wheels = 2
+                            Name = "Motorcycle",
+                            Description = "A two wheeled vehicle that makes the owner respected in certain communities",
+                            Size = 1
                         },
                         new
                         {
-                            License = "RRH123",
-                            Arrival = new DateTime(2022, 2, 1, 15, 9, 28, 0, DateTimeKind.Unspecified),
-                            Color = "Blue",
-                            Make = "Volvo",
-                            Model = "Xc60",
-                            ParkingSpot = 4,
-                            Type = 1,
-                            Wheels = 8
+                            Name = "Zeppelin",
+                            Description = "An airship in very limited edition",
+                            Size = 1
+                        },
+                        new
+                        {
+                            Name = "Bananamobile",
+                            Description = "Dimitris main way of transport, unmatched by any other vehicle. Aquatic, airborne and an atv all at once!",
+                            Size = 1
                         });
                 });
 
@@ -147,16 +389,70 @@ namespace Garage_2._0.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Garage_2._0.Models.MemberHasMembership", b =>
+                {
+                    b.HasOne("Garage_2._0.Models.Member", "Member")
+                        .WithMany("Memberships")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Garage_2._0.Models.Membership", "Membership")
+                        .WithMany("HasMembers")
+                        .HasForeignKey("MembershipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Membership");
+                });
+
             modelBuilder.Entity("Garage_2._0.Models.Vehicle", b =>
                 {
-                    b.HasOne("Garage_2._0.Models.Member", "owner")
+                    b.HasOne("Garage_2._0.Models.Member", "Owner")
                         .WithMany("Vehicles")
-                        .HasForeignKey("ownerSocialSecurityNumber");
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("owner");
+                    b.HasOne("Garage_2._0.Models.ParkingSpot", "ParkingSpot")
+                        .WithOne("Vehicle")
+                        .HasForeignKey("Garage_2._0.Models.Vehicle", "ParkingSpotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Garage_2._0.Models.VehicleType", "Type")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("VehicleTypeName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("ParkingSpot");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Garage_2._0.Models.Member", b =>
+                {
+                    b.Navigation("Memberships");
+
+                    b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.Membership", b =>
+                {
+                    b.Navigation("HasMembers");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.ParkingSpot", b =>
+                {
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("Garage_2._0.Models.VehicleType", b =>
                 {
                     b.Navigation("Vehicles");
                 });
